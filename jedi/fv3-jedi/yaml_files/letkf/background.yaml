@@ -1,0 +1,127 @@
+# Note the following three lines are copied from <Obs>.yaml
+# Obs being the last obs operator in the list of obs operators
+#background:
+# date: &date XXYYYY-XXMM-XXDDTXXHH:00:00Z
+# members:
+   - datetime: XXYYYY-XXMM-XXDDTXXHH:00:00Z
+     filetype: fms restart
+     state variables: [snwdph,vtype,slmsk] #,sheleg,snowxy,sneqvoxy,zsnsoxy,tsnoxy,snicexy,snliqxy,stc,smc,slc,tgxy]
+     datapath: input/bg/C768/mem001
+     filename_sfcd: XXYYYYXXMMXXDD.XXHH0000.sfc_data.nc
+     filename_cplr: XXYYYYXXMMXXDD.XXHH0000.coupler.res
+   - datetime: XXYYYY-XXMM-XXDDTXXHH:00:00Z
+     filetype: fms restart
+     state variables: [snwdph,vtype,slmsk] #,sheleg,snowxy,sneqvoxy,zsnsoxy,tsnoxy,snicexy,snliqxy,stc,smc,slc,tgxy]
+     datapath: input/bg/C768/mem002
+     filename_sfcd: XXYYYYXXMMXXDD.XXHH0000.sfc_data.nc
+     filename_cplr: XXYYYYXXMMXXDD.XXHH0000.coupler.res
+   - datetime: XXYYYY-XXMM-XXDDTXXHH:00:00Z
+     filetype: fms restart
+     state variables: [snwdph,vtype,slmsk] #,sheleg,snowxy,sneqvoxy,zsnsoxy,tsnoxy,snicexy,snliqxy,stc,smc,slc,tgxy]
+     datapath: input/bg/C768/mem003
+     filename_sfcd: XXYYYYXXMMXXDD.XXHH0000.sfc_data.nc
+     filename_cplr: XXYYYYXXMMXXDD.XXHH0000.coupler.res
+   - datetime: XXYYYY-XXMM-XXDDTXXHH:00:00Z
+     filetype: fms restart
+     state variables: [snwdph,vtype,slmsk] #,sheleg,snowxy,sneqvoxy,zsnsoxy,tsnoxy,snicexy,snliqxy,stc,smc,slc,tgxy]
+     datapath: input/bg/C768/mem004
+     filename_sfcd: XXYYYYXXMMXXDD.XXHH0000.sfc_data.nc
+     filename_cplr: XXYYYYXXMMXXDD.XXHH0000.coupler.res
+   - datetime: XXYYYY-XXMM-XXDDTXXHH:00:00Z
+     filetype: fms restart
+     state variables: [snwdph,vtype,slmsk] #,sheleg,snowxy,sneqvoxy,zsnsoxy,tsnoxy,snicexy,snliqxy,stc,smc,slc,tgxy]
+     datapath: input/bg/C768/mem005
+     filename_sfcd: XXYYYYXXMMXXDD.XXHH0000.sfc_data.nc
+     filename_cplr: XXYYYYXXMMXXDD.XXHH0000.coupler.res
+   - datetime: XXYYYY-XXMM-XXDDTXXHH:00:00Z
+     filetype: fms restart
+     state variables: [snwdph,vtype,slmsk] #,sheleg,snowxy,sneqvoxy,zsnsoxy,tsnoxy,snicexy,snliqxy,stc,smc,slc,tgxy]
+     datapath: input/bg/C768/mem006
+     filename_sfcd: XXYYYYXXMMXXDD.XXHH0000.sfc_data.nc
+     filename_cplr: XXYYYYXXMMXXDD.XXHH0000.coupler.res
+   - datetime: XXYYYY-XXMM-XXDDTXXHH:00:00Z
+     filetype: fms restart
+     state variables: [snwdph,vtype,slmsk] #,sheleg,snowxy,sneqvoxy,zsnsoxy,tsnoxy,snicexy,snliqxy,stc,smc,slc,tgxy]
+     datapath: input/bg/C768/mem007
+     filename_sfcd: XXYYYYXXMMXXDD.XXHH0000.sfc_data.nc
+     filename_cplr: XXYYYYXXMMXXDD.XXHH0000.coupler.res
+   - datetime: XXYYYY-XXMM-XXDDTXXHH:00:00Z
+     filetype: fms restart
+     state variables: [snwdph,vtype,slmsk] #,sheleg,snowxy,sneqvoxy,zsnsoxy,tsnoxy,snicexy,snliqxy,stc,smc,slc,tgxy]
+     datapath: input/bg/C768/mem008
+     filename_sfcd: XXYYYYXXMMXXDD.XXHH0000.sfc_data.nc
+     filename_cplr: XXYYYYXXMMXXDD.XXHH0000.coupler.res
+   - datetime: XXYYYY-XXMM-XXDDTXXHH:00:00Z
+     filetype: fms restart
+     state variables: [snwdph,vtype,slmsk] #,sheleg,snowxy,sneqvoxy,zsnsoxy,tsnoxy,snicexy,snliqxy,stc,smc,slc,tgxy]
+     datapath: input/bg/C768/mem009
+     filename_sfcd: XXYYYYXXMMXXDD.XXHH0000.sfc_data.nc
+     filename_cplr: XXYYYYXXMMXXDD.XXHH0000.coupler.res
+   - datetime: XXYYYY-XXMM-XXDDTXXHH:00:00Z
+     filetype: fms restart
+     state variables: [snwdph,vtype,slmsk] #,sheleg,snowxy,sneqvoxy,zsnsoxy,tsnoxy,snicexy,snliqxy,stc,smc,slc,tgxy]
+     datapath: input/bg/C768/mem010
+     filename_sfcd: XXYYYYXXMMXXDD.XXHH0000.sfc_data.nc
+     filename_cplr: XXYYYYXXMMXXDD.XXHH0000.coupler.res
+   - datetime: XXYYYY-XXMM-XXDDTXXHH:00:00Z
+     filetype: fms restart
+     state variables: [snwdph,vtype,slmsk] #,sheleg,snowxy,sneqvoxy,zsnsoxy,tsnoxy,snicexy,snliqxy,stc,smc,slc,tgxy]
+     datapath: input/bg/C768/mem011
+     filename_sfcd: XXYYYYXXMMXXDD.XXHH0000.sfc_data.nc
+     filename_cplr: XXYYYYXXMMXXDD.XXHH0000.coupler.res
+   - datetime: XXYYYY-XXMM-XXDDTXXHH:00:00Z
+     filetype: fms restart
+     state variables: [snwdph,vtype,slmsk] #,sheleg,snowxy,sneqvoxy,zsnsoxy,tsnoxy,snicexy,snliqxy,stc,smc,slc,tgxy]
+     datapath: input/bg/C768/mem012
+     filename_sfcd: XXYYYYXXMMXXDD.XXHH0000.sfc_data.nc
+     filename_cplr: XXYYYYXXMMXXDD.XXHH0000.coupler.res
+   - datetime: XXYYYY-XXMM-XXDDTXXHH:00:00Z
+     filetype: fms restart
+     state variables: [snwdph,vtype,slmsk] #,sheleg,snowxy,sneqvoxy,zsnsoxy,tsnoxy,snicexy,snliqxy,stc,smc,slc,tgxy]
+     datapath: input/bg/C768/mem013
+     filename_sfcd: XXYYYYXXMMXXDD.XXHH0000.sfc_data.nc
+     filename_cplr: XXYYYYXXMMXXDD.XXHH0000.coupler.res
+   - datetime: XXYYYY-XXMM-XXDDTXXHH:00:00Z
+     filetype: fms restart
+     state variables: [snwdph,vtype,slmsk] #,sheleg,snowxy,sneqvoxy,zsnsoxy,tsnoxy,snicexy,snliqxy,stc,smc,slc,tgxy]
+     datapath: input/bg/C768/mem014
+     filename_sfcd: XXYYYYXXMMXXDD.XXHH0000.sfc_data.nc
+     filename_cplr: XXYYYYXXMMXXDD.XXHH0000.coupler.res
+   - datetime: XXYYYY-XXMM-XXDDTXXHH:00:00Z
+     filetype: fms restart
+     state variables: [snwdph,vtype,slmsk] #,sheleg,snowxy,sneqvoxy,zsnsoxy,tsnoxy,snicexy,snliqxy,stc,smc,slc,tgxy]
+     datapath: input/bg/C768/mem015
+     filename_sfcd: XXYYYYXXMMXXDD.XXHH0000.sfc_data.nc
+     filename_cplr: XXYYYYXXMMXXDD.XXHH0000.coupler.res
+   - datetime: XXYYYY-XXMM-XXDDTXXHH:00:00Z
+     filetype: fms restart
+     state variables: [snwdph,vtype,slmsk] #,sheleg,snowxy,sneqvoxy,zsnsoxy,tsnoxy,snicexy,snliqxy,stc,smc,slc,tgxy]
+     datapath: input/bg/C768/mem016
+     filename_sfcd: XXYYYYXXMMXXDD.XXHH0000.sfc_data.nc
+     filename_cplr: XXYYYYXXMMXXDD.XXHH0000.coupler.res
+   - datetime: XXYYYY-XXMM-XXDDTXXHH:00:00Z
+     filetype: fms restart
+     state variables: [snwdph,vtype,slmsk] #,sheleg,snowxy,sneqvoxy,zsnsoxy,tsnoxy,snicexy,snliqxy,stc,smc,slc,tgxy]
+     datapath: input/bg/C768/mem017
+     filename_sfcd: XXYYYYXXMMXXDD.XXHH0000.sfc_data.nc
+     filename_cplr: XXYYYYXXMMXXDD.XXHH0000.coupler.res
+   - datetime: XXYYYY-XXMM-XXDDTXXHH:00:00Z
+     filetype: fms restart
+     state variables: [snwdph,vtype,slmsk] #!,sheleg,snowxy,sneqvoxy,zsnsoxy,tsnoxy,snicexy,snliqxy,stc,smc,slc,tgxy]
+     datapath: input/bg/C768/mem018
+     filename_sfcd: XXYYYYXXMMXXDD.XXHH0000.sfc_data.nc
+     filename_cplr: XXYYYYXXMMXXDD.XXHH0000.coupler.res
+   - datetime: XXYYYY-XXMM-XXDDTXXHH:00:00Z
+     filetype: fms restart
+     state variables: [snwdph,vtype,slmsk] #!,sheleg,snowxy,sneqvoxy,zsnsoxy,tsnoxy,snicexy,snliqxy,stc,smc,slc,tgxy]
+     datapath: input/bg/C768/mem019
+     filename_sfcd: XXYYYYXXMMXXDD.XXHH0000.sfc_data.nc
+     filename_cplr: XXYYYYXXMMXXDD.XXHH0000.coupler.res
+   - datetime: XXYYYY-XXMM-XXDDTXXHH:00:00Z
+     filetype: fms restart
+     state variables: [snwdph,vtype,slmsk] #!,sheleg,snowxy,sneqvoxy,zsnsoxy,tsnoxy,snicexy,snliqxy,stc,smc,slc,tgxy]
+     datapath: input/bg/C768/mem020
+     filename_sfcd: XXYYYYXXMMXXDD.XXHH0000.sfc_data.nc
+     filename_cplr: XXYYYYXXMMXXDD.XXHH0000.coupler.res
+
+        
