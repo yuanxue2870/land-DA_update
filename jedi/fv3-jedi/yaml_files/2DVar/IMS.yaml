@@ -12,6 +12,12 @@
       obs operator:
         name: Identity
       obs filters:
+      - filter: Perform Action
+        filter variables:
+        - name: totalSnowDepth
+        action:
+          name: assign error
+          error parameter: 40.0
 # prior filters
       - filter: Domain Check # land only
         where:

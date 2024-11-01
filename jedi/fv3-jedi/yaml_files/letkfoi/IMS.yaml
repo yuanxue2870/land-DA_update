@@ -23,6 +23,12 @@
       soar horizontal decay: 0.000021
       max nobs: 1
     obs filters:
+    - filter: Perform Action
+      filter variables:
+      - name: totalSnowDepth
+      action:
+        name: assign error
+        error parameter: 40.0
     - filter: Bounds Check # negative / missing snow
       filter variables:
       - name: totalSnowDepth
