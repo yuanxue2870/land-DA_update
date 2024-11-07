@@ -56,8 +56,8 @@ fi
 
 # storage settings 
 
-SAVE_IMS=${SAVE_IMS:-"YES"} # "YES" to save processed IMS IODA file
-SAVE_INCR=${SAVE_INCR:-"YES"} # "YES" to save increment (add others?) JEDI output
+SAVE_IMS=${SAVE_IMS:-"NO"} # "YES" to save processed IMS IODA file
+SAVE_INCR=${SAVE_INCR:-"NO"} # "YES" to save increment (add others?) JEDI output
 SAVE_TILE=${SAVE_TILE:-"NO"} # "YES" to save background in tile space
 KEEPJEDIDIR=${KEEPJEDIDIR:-"NO"} # delete DA workdir 
 
@@ -102,30 +102,8 @@ if [[ ! -e $JEDIWORKDIR ]]; then
         done   
     fi 
     ln -s ${TPATH}/${TSTUB}* ${JEDIWORKDIR}
-#TODO: This could replace all copying in this script? 
-    # ln -s ${OUTDIR} ${JEDIWORKDIR}/output
-
-    # ln -s ${OUTDIR}/DA ${JEDIWORKDIR}/output ? JEDIWORKDIR only contains DA related output
-
-    mkdir ${JEDIWORKDIR}/output
-    mkdir ${JEDIWORKDIR}/output/DA
-    mkdir ${JEDIWORKDIR}/output/DA/hofx
-    mkdir ${JEDIWORKDIR}/output/DA/jedi_incr
-    mkdir ${JEDIWORKDIR}/output/DA/restart
-    mkdir ${JEDIWORKDIR}/output/DA/jedi_anl
-
-    mkdir ${JEDIWORKDIR}/output/DA/jedi_incr/mem000
-    mkdir ${JEDIWORKDIR}/output/DA/restart/mem000
-    mkdir ${JEDIWORKDIR}/output/DA/jedi_anl/mem000
-    if [[ "$ensemble_size" -gt 1  ]]; then
-        for ie in $(seq $ensemble_size)
-        do
-            mem_ens="mem`printf %03i $ie`"
-            mkdir ${JEDIWORKDIR}/output/DA/jedi_incr/${mem_ens}
-            mkdir ${JEDIWORKDIR}/output/DA/restart/${mem_ens}
-            mkdir ${JEDIWORKDIR}/output/DA/jedi_anl/${mem_ens}
-        done
-    fi
+    ln -s ${TPATH}/${TSTUB}* ${JEDIWORKDIR}/restarts/ # to-do. change to only need one copy.
+    ln -s ${OUTDIR} ${JEDIWORKDIR}/output
 fi
 
 cd $JEDIWORKDIR 
@@ -284,7 +262,7 @@ cat >> fims.nml << EOF
   imsversion=${ims_vsn},
   imsres=${imsres},
   IMS_OBS_PATH="${OBSDIR}/snow_ice_cover/IMS/${YYYY}/",
-  IMS_IND_PATH="${OBSDIR}/snow_ice_cover/IMS/index_files/"
+  IMS_IND_PATH="${OBSDIR}/snow_ice_cover/IMS/index_files/",
   /
 EOF
     echo 'do_landDA: calling fIMS'
@@ -313,7 +291,7 @@ done # OBS_TYPES
 # 3. DETERMINE REQUESTED JEDI TYPE, CONSTRUCT YAMLS
 ################################################
 
-do_DA="NO"
+export do_DA="NO"
 do_HOFX="NO"
 
 for ii in "${!OBS_TYPES[@]}"; # loop through requested obs
@@ -367,6 +345,7 @@ if [[ $do_DA == "YES" ]]; then
    sed -i -e "s/XXTSTUB/${TSTUB}/g" jedi_DA.yaml
    sed -i -e "s#XXTPATH#${TPATH}#g" jedi_DA.yaml
    sed -i -e "s/XXRES/${RES}/g" jedi_DA.yaml
+   sed -i -e "s/XXORES/${ORES}/g" jedi_DA.yaml
    RESP1=$((RES+1))
    sed -i -e "s/XXREP/${RESP1}/g" jedi_DA.yaml
 
@@ -415,6 +394,7 @@ if [[ $do_HOFX == "YES" ]]; then
    sed -i -e "s#XXTPATH#${TPATH}#g" jedi_hofx.yaml
    sed -i -e "s/XXTSTUB/${TSTUB}/g" jedi_hofx.yaml
    sed -i -e "s/XXRES/${RES}/g" jedi_hofx.yaml
+   sed -i -e "s/XXORES/${ORES}/g" jedi_DA.yaml
    RESP1=$((RES+1))
    sed -i -e "s/XXREP/${RESP1}/g" jedi_hofx.yaml
 
