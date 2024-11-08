@@ -603,11 +603,11 @@ if [ $SAVE_ANL == "YES" ] && [ $do_DA == "YES" ]; then
 fi
 
 # keep hofx
-if [[ $SAVE_HOFX == "YES" ]]; then
-    if [ $do_DA == "YES" ] || [ $do_HOFX == "YES" ]; then
-        # yes |cp -r -u ${JEDIWORKDIR}/output/DA/hofx/*  ${OUTDIR}/DA/hofx/
-    fi
-fi
+# if [[ $SAVE_HOFX == "YES" ]]; then
+#     if [ $do_DA == "YES" ] || [ $do_HOFX == "YES" ]; then
+#         # yes |cp -r -u ${JEDIWORKDIR}/output/DA/hofx/*  ${OUTDIR}/DA/hofx/
+#     fi
+# fi
 
 # clean up 
 if [[ $KEEPJEDIDIR == "NO" ]]; then
