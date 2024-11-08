@@ -58,6 +58,8 @@ fi
 
 SAVE_IMS=${SAVE_IMS:-"NO"} # "YES" to save processed IMS IODA file
 SAVE_INCR=${SAVE_INCR:-"NO"} # "YES" to save increment (add others?) JEDI output
+SAVE_ANL=${SAVE_ANL:-"NO"} # "YES" to save JEDI Analysis outputs
+SAVE_HOFX=${SAVE_HOFX:-"NO"} # "YES" to save hofx
 SAVE_TILE=${SAVE_TILE:-"NO"} # "YES" to save background in tile space
 KEEPJEDIDIR=${KEEPJEDIDIR:-"NO"} # delete DA workdir 
 
@@ -74,31 +76,32 @@ if [[ ! -e ${OUTDIR}/DA ]]; then
     mkdir ${OUTDIR}/DA/jedi_incr
     mkdir ${OUTDIR}/DA/logs
     mkdir ${OUTDIR}/DA/hofx
-    mkdir ${OUTDIR}/DA/restart
-    mkdir ${OUTDIR}/DA/jedi_anl
-    
-    mkdir ${OUTDIR}/DA/jedi_incr/mem000
-    mkdir ${OUTDIR}/DA/restart/mem000
-    mkdir ${OUTDIR}/DA/jedi_anl/mem000
-    if [[ "$ensemble_size" -gt 1  ]]; then           
+    mkdir ${OUTDIR}/DA/restarts    
+    if [[ "$ensemble_size" -gt 1  ]]; then 
+        mem_ens="mem000"
+        mkdir ${OUTDIR}/DA/jedi_incr/${mem_ens} 
+        mkdir ${OUTDIR}/DA/hofx/${mem_ens}           
+        mkdir ${OUTDIR}/DA/restarts/${mem_ens}             
         for ie in $(seq $ensemble_size)     
         do
             mem_ens="mem`printf %03i $ie`"
-            mkdir ${OUTDIR}/DA/jedi_incr/${mem_ens}            
-            mkdir ${OUTDIR}/DA/restart/${mem_ens}   
-            mkdir ${OUTDIR}/DA/jedi_anl/${mem_ens}    
+            mkdir ${OUTDIR}/DA/jedi_incr/${mem_ens} 
+            mkdir ${OUTDIR}/DA/hofx/${mem_ens}           
+            mkdir ${OUTDIR}/DA/restarts/${mem_ens}                   
         done    
     fi     
 fi 
 
 if [[ ! -e $JEDIWORKDIR ]]; then 
     mkdir $JEDIWORKDIR      # ${WORKDIR}/jedi/  
-    mkdir ${JEDIWORKDIR}/mem000 
+    mkdir ${JEDIWORKDIR}/restarts 
     if [[ "$ensemble_size" -gt 1  ]]; then 
+        mem_ens="mem000"
+        mkdir $JEDIWORKDIR/restarts/${mem_ens}    
         for ie in $(seq $ensemble_size)
         do
             mem_ens="mem`printf %03i $ie`"
-            mkdir $JEDIWORKDIR/${mem_ens}    
+            mkdir $JEDIWORKDIR/restarts/${mem_ens}    
         done   
     fi 
     ln -s ${TPATH}/${TSTUB}* ${JEDIWORKDIR}
@@ -127,38 +130,31 @@ DP=`echo $PREVDATE | cut -c7-8`
 HP=`echo $PREVDATE | cut -c9-10`
 
 FILEDATE=${YYYY}${MM}${DD}.${HH}0000
-
-if  [[ $SAVE_TILE == "YES" ]]; then 
-    mem_ens="mem000"
-    RSTRDIR=${WORKDIR}/${mem_ens}       #RSTRDIR=${MEM_WORKDIR}   
+if  [[ $SAVE_TILE == "YES" ]]; then
     for tile in 1 2 3 4 5 6 
     do
-        cp ${RSTRDIR}/${FILEDATE}.sfc_data.tile${tile}.nc  ${RSTRDIR}/${FILEDATE}.sfc_data_back.tile${tile}.nc
+    cp ${RSTRDIR}/${FILEDATE}.sfc_data.tile${tile}.nc  ${RSTRDIR}/${FILEDATE}.sfc_data_back.tile${tile}.nc
     done
     if [[ "$ensemble_size" -gt 1  ]]; then 
         for ie in $(seq $ensemble_size)
         do
-            mem_ens="mem`printf %03i $ie`"
-            RSTRDIR=${WORKDIR}/${mem_ens}       #RSTRDIR=${MEM_WORKDIR}
+            mem_ens="mem`printf %03i $ie`"     #RSTRDIR=${MEM_WORKDIR}
             for tile in 1 2 3 4 5 6 
             do 
-            cp ${RSTRDIR}/${FILEDATE}.sfc_data.tile${tile}.nc  ${RSTRDIR}/${FILEDATE}.sfc_data_back.tile${tile}.nc
+            cp ${RSTRDIR}/${mem_ens}/${FILEDATE}.sfc_data.tile${tile}.nc  ${RSTRDIR}/${mem_ens}/${FILEDATE}.sfc_data_back.tile${tile}.nc
             done    
         done  
     fi
 fi 
 
 #stage restarts for applying JEDI update (files will get directly updated)
-mem_ens="mem000"
-RSTRDIR=${WORKDIR}/${mem_ens}/     #RSTRDIR=${MEM_WORKDIR}
 for tile in 1 2 3 4 5 6 
 do
-ln -fs ${RSTRDIR}/${FILEDATE}.sfc_data.tile${tile}.nc ${JEDIWORKDIR}/${mem_ens}/${FILEDATE}.sfc_data.tile${tile}.nc
+  ln -fs ${RSTRDIR}/${FILEDATE}.sfc_data.tile${tile}.nc ${JEDIWORKDIR}/restarts/${FILEDATE}.sfc_data.tile${tile}.nc
 done
-
-cres_file=${JEDIWORKDIR}/${mem_ens}/${FILEDATE}.coupler.res
+cres_file=${JEDIWORKDIR}/restarts/${FILEDATE}.coupler.res
 if [[ -e  ${RSTRDIR}/${FILEDATE}.coupler.res ]]; then 
-    #ln -sf ${RSTRDIR}/${FILEDATE}.coupler.res $cres_file
+    # ln -sf ${RSTRDIR}/${FILEDATE}.coupler.res $cres_file
     cp ${RSTRDIR}/${FILEDATE}.coupler.res $cres_file
 else #  if not present, need to create coupler.res for JEDI 
     cp ${LANDDADIR}/template.coupler.res $cres_file
@@ -172,18 +168,17 @@ else #  if not present, need to create coupler.res for JEDI
     sed -i -e "s/XXMP/${MP}/g" $cres_file
     sed -i -e "s/XXDP/${DP}/g" $cres_file
     sed -i -e "s/XXHP/${HP}/g" $cres_file
-fi
 
+fi 
 if [[ "$ensemble_size" -gt 1  ]]; then
     for ie in $(seq $ensemble_size)
     do
         mem_ens="mem`printf %03i $ie`"
-        RSTRDIR=${WORKDIR}/${mem_ens}
         for tile in 1 2 3 4 5 6
         do
-        ln -fs ${RSTRDIR}/${FILEDATE}.sfc_data.tile${tile}.nc ${JEDIWORKDIR}/${mem_ens}/${FILEDATE}.sfc_data.tile${tile}.nc
+        ln -fs ${RSTRDIR}/${mem_ens}/${FILEDATE}.sfc_data.tile${tile}.nc ${JEDIWORKDIR}/restarts/${mem_ens}/${FILEDATE}.sfc_data.tile${tile}.nc
         done
-        cp ${JEDIWORKDIR}/mem000/${FILEDATE}.coupler.res ${JEDIWORKDIR}/${mem_ens}
+        cp ${cres_file} ${JEDIWORKDIR}/restarts/${mem_ens}/${FILEDATE}.coupler.res
     done
 fi
 
@@ -257,7 +252,7 @@ cat >> fims.nml << EOF
   otype=${TSTUB},
   jdate=${YYYY}${DOY},
   yyyymmddhh=${YYYY}${MM}${DD}.${HH},
-  fcst_path="./mem000/",
+  fcst_path="./restarts/",
   imsformat=${imsformat},
   imsversion=${ims_vsn},
   imsres=${imsres},
@@ -340,8 +335,6 @@ if [[ $do_DA == "YES" ]]; then
    sed -i -e "s/XXDP/${DP}/g" jedi_DA.yaml
    sed -i -e "s/XXHP/${HP}/g" jedi_DA.yaml
 
-   sed -i -e "s/XXDT/${WINLEN}/g" jedi_DA.yaml  #  DA window lenth
-
    sed -i -e "s/XXTSTUB/${TSTUB}/g" jedi_DA.yaml
    sed -i -e "s#XXTPATH#${TPATH}#g" jedi_DA.yaml
    sed -i -e "s/XXRES/${RES}/g" jedi_DA.yaml
@@ -349,16 +342,15 @@ if [[ $do_DA == "YES" ]]; then
    RESP1=$((RES+1))
    sed -i -e "s/XXREP/${RESP1}/g" jedi_DA.yaml
 
-   sed -i -e "s/XXNPZ/${NPZ}/g" jedi_DA.yaml  # vertical layers
-
    sed -i -e "s/XXHOFX/false/g" jedi_DA.yaml  # do DA
    
+   sed -i -e "s/XXDT/${WINLEN}/g" jedi_DA.yaml  #  DA window lenth
+   sed -i -e "s/XXNTIL/${num_tiles}/g" jedi_DA.yaml  # Number of tiles
+   sed -i -e "s/XXNPZ/${NPZ}/g" jedi_DA.yaml  # vertical layers
    sed -i -e "s/XXLX/${LayX}/g" jedi_DA.yaml  # Layout
    sed -i -e "s/XXLY/${LayY}/g" jedi_DA.yaml
    sed -i -e "s/XXIOLX/${IOLayX}/g" jedi_DA.yaml #IO Layout
    sed -i -e "s/XXIOLY/${IOLayY}/g" jedi_DA.yaml
-
-   sed -i -e "s/XXNTIL/${num_tiles}/g" jedi_DA.yaml  # Number of tiles
 
 fi
 
@@ -389,25 +381,22 @@ if [[ $do_HOFX == "YES" ]]; then
    sed -i -e "s/XXDP/${DP}/g" jedi_hofx.yaml
    sed -i -e "s/XXHP/${HP}/g" jedi_hofx.yaml
 
-   sed -i -e "s/XXDT/${WINLEN}/g" jedi_hofx.yaml  #  DA window lenth
-
    sed -i -e "s#XXTPATH#${TPATH}#g" jedi_hofx.yaml
    sed -i -e "s/XXTSTUB/${TSTUB}/g" jedi_hofx.yaml
    sed -i -e "s/XXRES/${RES}/g" jedi_hofx.yaml
    sed -i -e "s/XXORES/${ORES}/g" jedi_DA.yaml
    RESP1=$((RES+1))
    sed -i -e "s/XXREP/${RESP1}/g" jedi_hofx.yaml
-
-   sed -i -e "s/XXNPZ/${NPZ}/g" jedi_hofx.yaml  # vertical layers
-
+   
    sed -i -e "s/XXHOFX/true/g" jedi_hofx.yaml  # do only HOFX
 
+   sed -i -e "s/XXDT/${WINLEN}/g" jedi_hofx.yaml  #  DA window lenth
+   sed -i -e "s/XXNTIL/${num_tiles}/g" jedi_DA.yaml  # Number of tiles
+   sed -i -e "s/XXNPZ/${NPZ}/g" jedi_hofx.yaml  # vertical layers
    sed -i -e "s/XXLX/${LayX}/g" jedi_DA.yaml  # Layout
    sed -i -e "s/XXLY/${LayY}/g" jedi_DA.yaml
    sed -i -e "s/XXIOLX/${IOLayX}/g" jedi_DA.yaml #IO Layout
    sed -i -e "s/XXIOLY/${IOLayY}/g" jedi_DA.yaml
-   
-   sed -i -e "s/XXNTIL/${num_tiles}/g" jedi_DA.yaml  # Number of tiles
 
 fi
 
@@ -442,9 +431,9 @@ elif [[ ${DAalg} == 'letkfoi' ]]; then
         mkdir $JEDIWORKDIR/mem_${ens}
         for tile in 1 2 3 4 5 6
         do
-        cp ${JEDIWORKDIR}/mem000/${FILEDATE}.sfc_data.tile${tile}.nc  ${JEDIWORKDIR}/mem_${ens}/${FILEDATE}.sfc_data.tile${tile}.nc
+        cp ${JEDIWORKDIR}/restarts/${FILEDATE}.sfc_data.tile${tile}.nc  ${JEDIWORKDIR}/mem_${ens}/${FILEDATE}.sfc_data.tile${tile}.nc
         done
-        cp ${JEDIWORKDIR}/mem000/${FILEDATE}.coupler.res ${JEDIWORKDIR}/mem_${ens}/${FILEDATE}.coupler.res
+        cp ${JEDIWORKDIR}/restarts/${FILEDATE}.coupler.res ${JEDIWORKDIR}/mem_${ens}/${FILEDATE}.coupler.res
     done
 
     echo 'do_landDA LETKFOI: calling create ensemble'
@@ -525,20 +514,18 @@ fi
 # 6. APPLY INCREMENT TO UFS RESTARTS 
 ################################################
 
-#TODO: compare the run time for this to 'multi-prog', and 'mpi-groups'
-
 if [[ $do_DA == "YES" ]]; then 
 
     if [[ "$ensemble_size" -gt 1  ]]; then 
-        rst_path="./"
+        rst_path="./restarts/"
         inc_path="./output/DA/jedi_incr/"
     else
         for tile in 1 2 3 4 5 6 
         do
-            mv ${JEDIWORKDIR}/snowinc.${FILEDATE}.sfc_data.tile${tile}.nc ${JEDIWORKDIR}/mem000/snowinc.${FILEDATE}.sfc_data.tile${tile}.nc
+            ln -fs ${JEDIWORKDIR}/restarts/${FILEDATE}.sfc_data.tile${tile}.nc ${JEDIWORKDIR}/${FILEDATE}.sfc_data.tile${tile}.nc
         done
-        rst_path="./mem000/"
-        inc_path="./mem000/"
+        rst_path="./"
+        inc_path="./"
     fi
 
     frac_grid=.false.
@@ -578,41 +565,44 @@ fi
 
 # keep IMS IODA file
 # note we are forcing overwrite
+#TODO check whether to keep or delete outdir/da/hofx rather than copying
+# Also it might be better to do these copies above and work within ${JEDIWORKDIR}/output/DA/
 if [ $SAVE_IMS == "YES"  ]; then
-   if [[ -e ${JEDIWORKDIR}ioda.IMSscf.${YYYY}${MM}${DD}.${TSTUB}.nc ]]; then
-      yes |cp -u ${JEDIWORKDIR}ioda.IMSscf.${YYYY}${MM}${DD}.${TSTUB}.nc ${OUTDIR}/DA/IMSproc/
+   if [[ -e ${JEDIWORKDIR}/ioda.IMSscf.${YYYY}${MM}${DD}.${TSTUB}.nc ]]; then
+      mv -f ${JEDIWORKDIR}/ioda.IMSscf.${YYYY}${MM}${DD}.${TSTUB}.nc ${JEDIWORKDIR}/output/DA/IMSproc/
+    #   yes |cp -u ${JEDIWORKDIR}/ioda.IMSscf.${YYYY}${MM}${DD}.${TSTUB}.nc ${OUTDIR}/DA/IMSproc/
    fi
 fi 
 
 # keep increments
 if [ $SAVE_INCR == "YES" ] && [ $do_DA == "YES" ]; then
-    if [[ "$ensemble_size" -gt 1  ]]; then 
-        yes |cp -r -u ${JEDIWORKDIR}/output/DA/jedi_incr/*  ${OUTDIR}/DA/jedi_incr/
-    else    
-        mem_ens="mem000" 
-        yes |cp -u ${JEDIWORKDIR}/${mem_ens}/snowinc.${FILEDATE}.sfc_data.tile*.nc  ${OUTDIR}/DA/jedi_incr/${mem_ens}
+    if [[ "$ensemble_size" -eq 1  ]]; then 
+        mv -f ${JEDIWORKDIR}/snowinc.${FILEDATE}.sfc_data.tile*.nc  ${JEDIWORKDIR}/output/DA/jedi_incr/    
+        # yes |cp -u ${JEDIWORKDIR}/snowinc.${FILEDATE}.sfc_data.tile*.nc  ${OUTDIR}/DA/jedi_incr/       
+    # else # This is already linked above
+        # yes |cp -r -u ${JEDIWORKDIR}/output/DA/jedi_incr/*  ${OUTDIR}/DA/jedi_incr/           
     fi	
 fi 
 
 # keep analysis restarts (for LETKF)
 if [ $SAVE_ANL == "YES" ] && [ $do_DA == "YES" ]; then
-    if [[ "$ensemble_size" -gt 1  ]]; then
-        for ie in $(seq $ensemble_size)
-        do
-            mem_ens="mem`printf %03i $ie`"
-            yes |cp -u ${JEDIWORKDIR}/${mem_ens}/${FILEDATE}.sfc_data.tile*.nc  ${OUTDIR}/DA/restart/${mem_ens}
-        done
-        yes |cp -r -u ${JEDIWORKDIR}/output/DA/jedi_anl/*  ${OUTDIR}/DA/jedi_anl/
-    else
-        mem_ens="mem000"
-        yes |cp -u ${JEDIWORKDIR}/${mem_ens}/${FILEDATE}.sfc_data.tile*.nc  ${OUTDIR}/DA/restart/${mem_ens}
+    if [[ "$ensemble_size" -eq 1  ]]; then
+        yes |cp -u ${JEDIWORKDIR}/restarts/${FILEDATE}.sfc_data.tile*.nc  ${JEDIWORKDIR}/output/DA/restarts/
+        # yes |cp -u ${JEDIWORKDIR}/restarts/${FILEDATE}.sfc_data.tile*.nc  ${OUTDIR}/DA/restarts/
+
+    # else # This is already linked above
+        # for ie in $(seq $ensemble_size)
+        # do
+        #     mem_ens="mem`printf %03i $ie`"
+        #     yes |cp -u ${JEDIWORKDIR}/output/DA/restarts/${mem_ens}/${FILEDATE}.sfc_data.tile*.nc  ${OUTDIR}/DA/restarts/${mem_ens}
+        # done
     fi
 fi
 
 # keep hofx
 if [[ $SAVE_HOFX == "YES" ]]; then
     if [ $do_DA == "YES" ] || [ $do_HOFX == "YES" ]; then
-        yes |cp -r -u ${JEDIWORKDIR}/output/DA/hofx/*  ${OUTDIR}/DA/hofx/
+        # yes |cp -r -u ${JEDIWORKDIR}/output/DA/hofx/*  ${OUTDIR}/DA/hofx/
     fi
 fi
 
