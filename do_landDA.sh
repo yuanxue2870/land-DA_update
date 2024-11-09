@@ -27,6 +27,8 @@ fi
 echo "reading DA settings from $config_file"
 
 GFSv17=${GFSv17:-"NO"}
+num_tiles=${num_tiles:-6}
+ensemble_size=${ensemble_size:-1}
 
 source $config_file
 
