@@ -396,19 +396,19 @@ if [[ $do_HOFX == "YES" ]]; then
    sed -i -e "s#XXTPATH#${TPATH}#g" jedi_hofx.yaml
    sed -i -e "s/XXTSTUB/${TSTUB}/g" jedi_hofx.yaml
    sed -i -e "s/XXRES/${RES}/g" jedi_hofx.yaml
-   sed -i -e "s/XXORES/${ORES}/g" jedi_DA.yaml
+   sed -i -e "s/XXORES/${ORES}/g" jedi_hofx.yaml
    RESP1=$((RES+1))
    sed -i -e "s/XXREP/${RESP1}/g" jedi_hofx.yaml
    
    sed -i -e "s/XXHOFX/true/g" jedi_hofx.yaml  # do only HOFX
 
    sed -i -e "s/XXDT/${WINLEN}/g" jedi_hofx.yaml  #  DA window lenth
-   sed -i -e "s/XXNTIL/${num_tiles}/g" jedi_DA.yaml  # Number of tiles
+   sed -i -e "s/XXNTIL/${num_tiles}/g" jedi_hofx.yaml  # Number of tiles
    sed -i -e "s/XXNPZ/${NPZ}/g" jedi_hofx.yaml  # vertical layers
-   sed -i -e "s/XXLX/${LayX}/g" jedi_DA.yaml  # Layout
-   sed -i -e "s/XXLY/${LayY}/g" jedi_DA.yaml
-   sed -i -e "s/XXIOLX/${IOLayX}/g" jedi_DA.yaml #IO Layout
-   sed -i -e "s/XXIOLY/${IOLayY}/g" jedi_DA.yaml
+   sed -i -e "s/XXLX/${LayX}/g" jedi_hofx.yaml  # Layout
+   sed -i -e "s/XXLY/${LayY}/g" jedi_hofx.yaml
+   sed -i -e "s/XXIOLX/${IOLayX}/g" jedi_hofx.yaml #IO Layout
+   sed -i -e "s/XXIOLY/${IOLayY}/g" jedi_hofx.yaml
 
 fi
 
@@ -463,7 +463,7 @@ elif [[ ${DAalg} == 'letkfoi_smc' ]]; then
 
 elif [[ ${DAalg} == 'letkf' ]]; then
 
-    if [[ $YAML_DA == "construct" ]];then
+    if [[ $do_DA == "YES" && $YAML_DA == "construct" ]];then
 
         cp ${LANDDADIR}/jedi/fv3-jedi/yaml_files/${DAalg}/bkg1mem.yaml ${JEDIWORKDIR}/bkg1mem.yaml
         sed -i -e "s/XXYYYY/${YYYY}/g" bkg1mem.yaml
@@ -479,7 +479,8 @@ elif [[ ${DAalg} == 'letkf' ]]; then
         done
     fi
 
-    if [[ $YAML_HOFX == "construct" ]];then
+    if [[ $do_HOFX == "YES" && $YAML_HOFX == "construct" ]];then
+
         cp ${LANDDADIR}/jedi/fv3-jedi/yaml_files/${DAalg}/bkg1mem.yaml ${JEDIWORKDIR}/bkg1mem.yaml
         sed -i -e "s/XXYYYY/${YYYY}/g" bkg1mem.yaml
         sed -i -e "s/XXMM/${MM}/g" bkg1mem.yaml
