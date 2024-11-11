@@ -13,6 +13,9 @@
 # Clara Draper, Oct 2021.
 # Aug 2020, generalized for all DA types.
 
+# TODO 11.09.2024: for revisions for running ensemble DA with LETKF in JEDI
+# 1. tile numbers as input dictate tile loops
+# 
 #########################################
 # source namelist and setup directories
 #########################################
