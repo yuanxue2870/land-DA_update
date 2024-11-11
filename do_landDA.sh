@@ -30,8 +30,9 @@ fi
 echo "reading DA settings from $config_file"
 
 GFSv17=${GFSv17:-"NO"}
-num_tiles=${num_tiles:-6}
-ensemble_size=${ensemble_size:-1}
+num_tiles=${num_tiles:- 6}
+ensemble_size=${ensemble_size:- 1}
+NPROC_JEDI=${NPROC_JEDI:- 6}
 
 source $config_file
 
@@ -526,7 +527,7 @@ fi
 ################################################
 # 6. APPLY INCREMENT TO UFS RESTARTS 
 ################################################
-
+NPROC_INCR=$SLURM_NTASKS
 if [[ $do_DA == "YES" ]]; then 
 
     if [[ "$ensemble_size" -gt 1  ]]; then 
@@ -564,7 +565,7 @@ EOF
 
     echo 'do_landDA: calling apply snow increment'
  
-    time srun '--export=ALL' -n $NPROC_JEDI ${INCR_EXECDIR}/apply_incr.exe ${LOGDIR}/apply_incr.log
+    time srun '--export=ALL' -n $NPROC_INCR ${INCR_EXECDIR}/apply_incr.exe ${LOGDIR}/apply_incr.log
     if [[ $? != 0 ]]; then
         echo "apply snow increment failed"
         exit 10
