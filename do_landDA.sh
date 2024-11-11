@@ -139,25 +139,29 @@ FILEDATE=${YYYY}${MM}${DD}.${HH}0000
 RSTRDIR=${WORKDIR}
 
 if  [[ $SAVE_TILE == "YES" ]]; then   
-    for ie in $(seq $ensemble_size)
-    do
-        if [[ "$ensemble_size" -eq 1  ]]; then 
-            mem_ens="mem000"   
-        else
+    mem_ens="mem000"   
+    for tile in 1 2 3 4 5 6 
+    do 
+    cp ${RSTRDIR}/${mem_ens}/${FILEDATE}.sfc_data.tile${tile}.nc  ${RSTRDIR}/${mem_ens}/${FILEDATE}.sfc_data_back.tile${tile}.nc
+    done    
+    
+    if [[ "$ensemble_size" -gt 1  ]]; then 
+        for ie in $(seq $ensemble_size)
+        do
             mem_ens="mem`printf %03i $ie`"     
-        fi
-        for tile in 1 2 3 4 5 6 
-        do 
-        cp ${RSTRDIR}/${mem_ens}/${FILEDATE}.sfc_data.tile${tile}.nc  ${RSTRDIR}/${mem_ens}/${FILEDATE}.sfc_data_back.tile${tile}.nc
-        done    
-    done  
+            for tile in 1 2 3 4 5 6 
+            do 
+            cp ${RSTRDIR}/${mem_ens}/${FILEDATE}.sfc_data.tile${tile}.nc  ${RSTRDIR}/${mem_ens}/${FILEDATE}.sfc_data_back.tile${tile}.nc
+            done    
+        done  
+    fi
 fi 
 
 #stage restarts for applying JEDI update (files will get directly updated)
-
+mem_ens="mem000"
 cres_file=${JEDIWORKDIR}/restarts/${FILEDATE}.coupler.res
-if [[ -e  ${RSTRDIR}/mem000/${FILEDATE}.coupler.res ]]; then 
-    cp ${RSTRDIR}/${FILEDATE}.coupler.res $cres_file
+if [[ -e  ${RSTRDIR}/${mem_ens}/${FILEDATE}.coupler.res ]]; then 
+    cp ${RSTRDIR}/${mem_ens}/${FILEDATE}.coupler.res $cres_file
 else #  if not present, need to create coupler.res for JEDI 
     cp ${LANDDADIR}/template.coupler.res $cres_file
 
@@ -172,13 +176,13 @@ else #  if not present, need to create coupler.res for JEDI
     sed -i -e "s/XXHP/${HP}/g" $cres_file
 
 fi 
-if [[ "$ensemble_size" -eq 1  ]]; then
-    mem_ens="mem000"
-    for tile in 1 2 3 4 5 6 
-    do
-        ln -fs ${RSTRDIR}/${mem_ens}/${FILEDATE}.sfc_data.tile${tile}.nc ${JEDIWORKDIR}/restarts/${FILEDATE}.sfc_data.tile${tile}.nc
-    done
-else    
+
+for tile in 1 2 3 4 5 6 
+do
+    ln -fs ${RSTRDIR}/${mem_ens}/${FILEDATE}.sfc_data.tile${tile}.nc ${JEDIWORKDIR}/restarts/${FILEDATE}.sfc_data.tile${tile}.nc
+done
+
+if [[ "$ensemble_size" -gt 1  ]]; then    
     for ie in $(seq $ensemble_size)
     do
         mem_ens="mem`printf %03i $ie`"
@@ -598,11 +602,7 @@ if [ $SAVE_ANL == "YES" ] && [ $do_DA == "YES" ]; then
         # yes |cp -u ${JEDIWORKDIR}/restarts/${FILEDATE}.sfc_data.tile*.nc  ${JEDIWORKDIR}/output/DA/restarts/
         yes |cp -u ${JEDIWORKDIR}/restarts/${FILEDATE}.sfc_data.tile*.nc  ${OUTDIR}/DA/restarts/
     else 
-        for ie in $(seq $ensemble_size)
-        do
-            mem_ens="mem`printf %03i $ie`"
-            yes |cp -u ${JEDIWORKDIR}/output/DA/restarts/${mem_ens}/${FILEDATE}.sfc_data.tile*.nc  ${OUTDIR}/DA/restarts/${mem_ens}
-        done
+        yes |cp -u ${JEDIWORKDIR}/output/DA/restarts/*  ${OUTDIR}/DA/restarts/
     fi
 fi
 
