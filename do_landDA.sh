@@ -111,7 +111,7 @@ if [[ ! -e $JEDIWORKDIR ]]; then
     fi 
     ln -s ${TPATH}/${TSTUB}* ${JEDIWORKDIR}
     ln -s ${TPATH}/${TSTUB}* ${JEDIWORKDIR}/restarts/ # to-do. change to only need one copy.
-    ln -s ${OUTDIR} ${JEDIWORKDIR}/output
+    # ln -s ${OUTDIR} ${JEDIWORKDIR}/output       # JEDIWORKDIR can be delted while keeping OUTDIR
 fi
 
 cd $JEDIWORKDIR 
@@ -577,42 +577,41 @@ fi
 # Also it might be better to do these copies above and work within ${JEDIWORKDIR}/output/DA/
 if [ $SAVE_IMS == "YES"  ]; then
    if [[ -e ${JEDIWORKDIR}/ioda.IMSscf.${YYYY}${MM}${DD}.${TSTUB}.nc ]]; then
-      mv -f ${JEDIWORKDIR}/ioda.IMSscf.${YYYY}${MM}${DD}.${TSTUB}.nc ${JEDIWORKDIR}/output/DA/IMSproc/
-    #   yes |cp -u ${JEDIWORKDIR}/ioda.IMSscf.${YYYY}${MM}${DD}.${TSTUB}.nc ${OUTDIR}/DA/IMSproc/
+    #   mv -f ${JEDIWORKDIR}/ioda.IMSscf.${YYYY}${MM}${DD}.${TSTUB}.nc ${JEDIWORKDIR}/output/DA/IMSproc/
+      yes |cp -u ${JEDIWORKDIR}/ioda.IMSscf.${YYYY}${MM}${DD}.${TSTUB}.nc ${OUTDIR}/DA/IMSproc/
    fi
 fi 
 
 # keep increments
 if [ $SAVE_INCR == "YES" ] && [ $do_DA == "YES" ]; then
     if [[ "$ensemble_size" -eq 1  ]]; then 
-        mv -f ${JEDIWORKDIR}/snowinc.${FILEDATE}.sfc_data.tile*.nc  ${JEDIWORKDIR}/output/DA/jedi_incr/    
-        # yes |cp -u ${JEDIWORKDIR}/snowinc.${FILEDATE}.sfc_data.tile*.nc  ${OUTDIR}/DA/jedi_incr/       
-    # else # This is already linked above
-        # yes |cp -r -u ${JEDIWORKDIR}/output/DA/jedi_incr/*  ${OUTDIR}/DA/jedi_incr/           
+        # mv -f ${JEDIWORKDIR}/snowinc.${FILEDATE}.sfc_data.tile*.nc  ${JEDIWORKDIR}/output/DA/jedi_incr/    
+        yes |cp -u ${JEDIWORKDIR}/snowinc.${FILEDATE}.sfc_data.tile*.nc  ${OUTDIR}/DA/jedi_incr/       
+    else # Remove this if we keep the OUTDIR link above
+        yes |cp -r -u ${JEDIWORKDIR}/output/DA/jedi_incr/*  ${OUTDIR}/DA/jedi_incr/           
     fi	
 fi 
 
 # keep analysis restarts (for LETKF)
 if [ $SAVE_ANL == "YES" ] && [ $do_DA == "YES" ]; then
     if [[ "$ensemble_size" -eq 1  ]]; then
-        yes |cp -u ${JEDIWORKDIR}/restarts/${FILEDATE}.sfc_data.tile*.nc  ${JEDIWORKDIR}/output/DA/restarts/
-        # yes |cp -u ${JEDIWORKDIR}/restarts/${FILEDATE}.sfc_data.tile*.nc  ${OUTDIR}/DA/restarts/
-
-    # else # This is already linked above
-        # for ie in $(seq $ensemble_size)
-        # do
-        #     mem_ens="mem`printf %03i $ie`"
-        #     yes |cp -u ${JEDIWORKDIR}/output/DA/restarts/${mem_ens}/${FILEDATE}.sfc_data.tile*.nc  ${OUTDIR}/DA/restarts/${mem_ens}
-        # done
+        # yes |cp -u ${JEDIWORKDIR}/restarts/${FILEDATE}.sfc_data.tile*.nc  ${JEDIWORKDIR}/output/DA/restarts/
+        yes |cp -u ${JEDIWORKDIR}/restarts/${FILEDATE}.sfc_data.tile*.nc  ${OUTDIR}/DA/restarts/
+    else 
+        for ie in $(seq $ensemble_size)
+        do
+            mem_ens="mem`printf %03i $ie`"
+            yes |cp -u ${JEDIWORKDIR}/output/DA/restarts/${mem_ens}/${FILEDATE}.sfc_data.tile*.nc  ${OUTDIR}/DA/restarts/${mem_ens}
+        done
     fi
 fi
 
 # keep hofx
-# if [[ $SAVE_HOFX == "YES" ]]; then
-#     if [ $do_DA == "YES" ] || [ $do_HOFX == "YES" ]; then
-#         # yes |cp -r -u ${JEDIWORKDIR}/output/DA/hofx/*  ${OUTDIR}/DA/hofx/
-#     fi
-# fi
+if [[ $SAVE_HOFX == "YES" ]]; then
+    if [ $do_DA == "YES" ] || [ $do_HOFX == "YES" ]; then
+        yes |cp -r -u ${JEDIWORKDIR}/output/DA/hofx/*  ${OUTDIR}/DA/hofx/
+    fi
+fi
 
 # clean up 
 if [[ $KEEPJEDIDIR == "NO" ]]; then
