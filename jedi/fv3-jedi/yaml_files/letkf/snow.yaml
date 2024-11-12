@@ -49,7 +49,7 @@ output:
 #  date: &date XXYYYY-XXMM-XXDDTXXHH:00:00Z
   filetype: fms restart
   datapath: output/jedi_anl/mem%{member}%  #output/letkf/C768/restart/mem%{member}%
-#  prefix: snowanl
+  #  prefix: snowanl
   filename_sfcd: sfc_data.nc
   filename_cplr: coupler.res
   state variables: #[snwdph,vtype,slmsk] #,sheleg,snowxy,sneqvoxy,zsnsoxy,tsnoxy,snicexy,snliqxy,stc,smc,slc,tgxy]
@@ -60,7 +60,7 @@ output ensemble increments:
   date: XXYYYY-XXMM-XXDDTXXHH:00:00Z #*date
   filetype: fms restart
   datapath: output/jedi_incr/mem%{member}%
-  filename_sfcd: sfc_data.nc  #xainc.sfc_data.nc
+  filename_sfcd: XXYYYYXXMMXXDD.XXHH0000.sfc_data.nc  #xainc.sfc_data.nc
   prefix: snowinc  #land_inc
   state variables:
   - snwdph
@@ -70,7 +70,7 @@ output increment:
   date: XXYYYY-XXMM-XXDDTXXHH:00:00Z #*date
   filetype: fms restart
   datapath: output/jedi_incr/mem%{member}%
-  filename_sfcd: sfc_data.nc
+  filename_sfcd: XXYYYYXXMMXXDD.XXHH0000.sfc_data.nc
   prefix: snowinc
   state variables:
   - snwdph
