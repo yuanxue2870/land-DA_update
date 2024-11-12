@@ -474,8 +474,8 @@ elif [[ ${DAalg} == 'letkf' ]]; then
         for ie in $(seq $ensemble_size)
         do
             cp bkg1mem.yaml backgroundens.yaml
-            mem_ens="mem`printf %03i $ie`"
-            sed -i -e "s/XXMEM/${mem_ens}/g" backgroundens.yaml
+            mem_ens="restarts/mem`printf %03i $ie`"
+            sed -i -e "s#XXMEM#${mem_ens}#g" backgroundens.yaml
             cat backgroundens.yaml >> jedi_DA.yaml
         done
     fi
@@ -490,8 +490,8 @@ elif [[ ${DAalg} == 'letkf' ]]; then
         for ie in $(seq $ensemble_size)
         do
             cp bkg1mem.yaml backgroundens.yaml
-            mem_ens="mem`printf %03i $ie`"
-            sed -i -e "s/XXMEM/${mem_ens}/g" backgroundens.yaml
+            mem_ens="restarts/mem`printf %03i $ie`"
+            sed -i -e "s#XXMEM#${mem_ens}#g" backgroundens.yaml
             cat backgroundens.yaml >> jedi_hofx.yaml
         done
     fi
