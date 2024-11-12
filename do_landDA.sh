@@ -171,6 +171,7 @@ if  [[ $SAVE_TILE == "YES" ]]; then
 fi 
 
 #stage restarts for applying JEDI update (files will get directly updated)
+# for LETKF mem000--ensemble mean-- used only in IMS Calc
 for tile in 1 2 3 4 5 6 
 do
   ln -fs ${RSTRDIR}/${FILEDATE}.sfc_data.tile${tile}.nc ${JEDIWORKDIR}/restarts/${FILEDATE}.sfc_data.tile${tile}.nc
