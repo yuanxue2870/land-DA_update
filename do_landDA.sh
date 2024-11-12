@@ -82,14 +82,16 @@ if [[ ! -e ${OUTDIR}/DA ]]; then
     mkdir ${OUTDIR}/DA/jedi_incr
     mkdir ${OUTDIR}/DA/logs
     mkdir ${OUTDIR}/DA/hofx
-    mkdir ${OUTDIR}/DA/restarts    
+    mkdir ${OUTDIR}/DA/restarts 
+    mkdir ${OUTDIR}/DA/jedi_anl    
     if [[ "$ensemble_size" -gt 1  ]]; then            
         for ie in $(seq 0 $ensemble_size)     
         do
             mem_ens="mem`printf %03i $ie`"
             mkdir ${OUTDIR}/DA/jedi_incr/${mem_ens}     
             # mkdir ${OUTDIR}/DA/hofx/${mem_ens}     
-            mkdir ${OUTDIR}/DA/restarts/${mem_ens}                   
+            mkdir ${OUTDIR}/DA/restarts/${mem_ens}    
+            mkdir ${OUTDIR}/DA/jedi_anl/${mem_ens}               
         done    
     fi     
 fi 
@@ -112,14 +114,16 @@ if [[ ! -e $JEDIWORKDIR ]]; then
     mkdir $JEDIWORKDIR/output
     mkdir $JEDIWORKDIR/output/jedi_incr
     mkdir $JEDIWORKDIR/output/hofx
-    mkdir $JEDIWORKDIR/output/restarts    
+    mkdir $JEDIWORKDIR/output/restarts   
+    mkdir $JEDIWORKDIR/output/jedi_anl 
     if [[ "$ensemble_size" -gt 1  ]]; then            
         for ie in $(seq 0 $ensemble_size)     
         do
             mem_ens="mem`printf %03i $ie`"
             mkdir $JEDIWORKDIR/output/jedi_incr/${mem_ens} 
             # mkdir $JEDIWORKDIR/output/hofx/${mem_ens}           
-            mkdir $JEDIWORKDIR/output/restarts/${mem_ens}                   
+            mkdir $JEDIWORKDIR/output/restarts/${mem_ens}    
+            mkdir $JEDIWORKDIR/output/jedi_anl/${mem_ens}                 
         done    
     fi 
 fi
@@ -602,20 +606,27 @@ if [ $SAVE_INCR == "YES" ] && [ $do_DA == "YES" ]; then
     fi	
 fi 
 
+# keep hofx
+if [[ $SAVE_HOFX == "YES" ]]; then
+    if [ $do_DA == "YES" ] || [ $do_HOFX == "YES" ]; then
+        yes |cp -r -u ${JEDIWORKDIR}/output/hofx/*  ${OUTDIR}/DA/hofx/
+    fi
+fi
+
 # keep analysis restarts (for LETKF)
 if [ $SAVE_ANL == "YES" ] && [ $do_DA == "YES" ]; then
     if [[ "$ensemble_size" -eq 1  ]]; then
         # yes |cp -u ${JEDIWORKDIR}/restarts/${FILEDATE}.sfc_data.tile*.nc  ${JEDIWORKDIR}/output/DA/restarts/
         yes |cp -u ${JEDIWORKDIR}/restarts/${FILEDATE}.sfc_data.tile*.nc  ${OUTDIR}/DA/restarts/
     else 
-        yes |cp -u ${JEDIWORKDIR}/output/restarts/*  ${OUTDIR}/DA/restarts/
-    fi
-fi
+        yes |cp -u -r ${JEDIWORKDIR}/output/jedi_anl/*  ${OUTDIR}/DA/jedi_anl/
 
-# keep hofx
-if [[ $SAVE_HOFX == "YES" ]]; then
-    if [ $do_DA == "YES" ] || [ $do_HOFX == "YES" ]; then
-        yes |cp -r -u ${JEDIWORKDIR}/output/hofx/*  ${OUTDIR}/DA/hofx/
+        for ie in $(seq $ensemble_size) # non-jedi analysis, from add_jedi_incr
+        do
+            mem_ens="mem`printf %03i $ie`"
+            yes |cp -u -r ${JEDIWORKDIR}/$mem_ens/*  ${OUTDIR}/DA/restarts/$mem_ens/
+        done
+        
     fi
 fi
 
