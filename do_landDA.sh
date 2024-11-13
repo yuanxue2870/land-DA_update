@@ -580,6 +580,25 @@ EOF
         exit 10
     fi
   fi
+
+    # needed for ensemble mean computed below
+    if [[ $do_enkf == "YES" && "$ensemble_size" -gt 1 ]]; then            
+        for ie in $(seq $ensemble_size) # non-jedi analysis, from add_jedi_incr
+        do
+            mem_ens="mem`printf %03i $ie`"
+            for tile in 1 2 3 4 5 6 
+            do
+                ln -fs ${JEDIWORKDIR}/$mem_ens/${FILEDATE}.sfc_data.tile${tile}.nc ${JEDIWORKDIR}/mem000/sfcd_t${tile}_mem${ie}.nc 
+            done
+        done
+        for tile in 1 2 3 4 5 6 
+        do
+            ncra -O ${JEDIWORKDIR}/mem000/sfcd_t${tile}_mem*.nc ${JEDIWORKDIR}/mem000/${FILEDATE}.sfc_data.tile${tile}.nc
+            yes |cp -u ${JEDIWORKDIR}/mem000/${FILEDATE}.sfc_data.tile${tile}.nc ${WORKDIR}/mem000/${FILEDATE}.sfc_data.tile${tile}.nc
+
+	    rm -f ${JEDIWORKDIR}/mem000/sfcd_t${tile}_mem*.nc
+        done
+    fi
 fi 
 
 ################################################
@@ -622,7 +641,7 @@ if [ $SAVE_ANL == "YES" ] && [ $do_DA == "YES" ]; then
     else 
         yes |cp -u -r ${JEDIWORKDIR}/output/jedi_anl/*  ${OUTDIR}/DA/jedi_anl/
 
-        for ie in $(seq $ensemble_size) # non-jedi analysis, from add_jedi_incr
+        for ie in $(seq 0 $ensemble_size) # non-jedi analysis, from add_jedi_incr
         do
             mem_ens="mem`printf %03i $ie`"
             yes |cp -u -r ${JEDIWORKDIR}/$mem_ens/*  ${OUTDIR}/DA/restarts/$mem_ens/
