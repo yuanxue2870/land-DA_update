@@ -95,6 +95,9 @@ MM=`echo $THISDATE | cut -c5-6`
 DD=`echo $THISDATE | cut -c7-8`
 HH=`echo $THISDATE | cut -c9-10`
 
+DABEGIN=`${INCDATE} $THISDATE -$HALFWINLEN`
+HB=`echo $DABEGIN | cut -c9-10`
+
 PREVDATE=`${INCDATE} $THISDATE -$WINLEN`
 
 YYYP=`echo $PREVDATE | cut -c1-4`
@@ -287,6 +290,7 @@ if [[ $do_DA == "YES" ]]; then
    sed -i -e "s/XXMP/${MP}/g" jedi_DA.yaml
    sed -i -e "s/XXDP/${DP}/g" jedi_DA.yaml
    sed -i -e "s/XXHP/${HP}/g" jedi_DA.yaml
+   sed -i -e "s/XXHB/${HB}/g" jedi_DA.yaml
 
    sed -i -e "s/XXWINLEN/${WINLEN}/g" jedi_DA.yaml
 
@@ -326,6 +330,7 @@ if [[ $do_HOFX == "YES" ]]; then
    sed -i -e "s/XXMP/${MP}/g" jedi_hofx.yaml
    sed -i -e "s/XXDP/${DP}/g" jedi_hofx.yaml
    sed -i -e "s/XXHP/${HP}/g" jedi_hofx.yaml
+   sed -i -e "s/XXHB/${HB}/g" jedi_hofx.yaml
 
    sed -i -e "s/XXWINLEN/${WINLEN}/g" jedi_hofx.yaml
 
