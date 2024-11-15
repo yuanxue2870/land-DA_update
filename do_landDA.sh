@@ -288,6 +288,8 @@ if [[ $do_DA == "YES" ]]; then
    sed -i -e "s/XXDP/${DP}/g" jedi_DA.yaml
    sed -i -e "s/XXHP/${HP}/g" jedi_DA.yaml
 
+   sed -i -e "s/XXWINLEN/${WINLEN}/g" jedi_DA.yaml
+
    sed -i -e "s/XXTSTUB/${TSTUB}/g" jedi_DA.yaml
    sed -i -e "s#XXTPATH#${TPATH}#g" jedi_DA.yaml
    sed -i -e "s/XXRES/${RES}/g" jedi_DA.yaml
@@ -325,10 +327,12 @@ if [[ $do_HOFX == "YES" ]]; then
    sed -i -e "s/XXDP/${DP}/g" jedi_hofx.yaml
    sed -i -e "s/XXHP/${HP}/g" jedi_hofx.yaml
 
+   sed -i -e "s/XXWINLEN/${WINLEN}/g" jedi_hofx.yaml
+
    sed -i -e "s#XXTPATH#${TPATH}#g" jedi_hofx.yaml
    sed -i -e "s/XXTSTUB/${TSTUB}/g" jedi_hofx.yaml
    sed -i -e "s/XXRES/${RES}/g" jedi_hofx.yaml
-   sed -i -e "s/XXORES/${ORES}/g" jedi_DA.yaml
+   sed -i -e "s/XXORES/${ORES}/g" jedi_hofx.yaml
    RESP1=$((RES+1))
    sed -i -e "s/XXREP/${RESP1}/g" jedi_hofx.yaml
 
