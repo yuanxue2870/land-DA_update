@@ -144,7 +144,7 @@ do
 
   # get the obs file name 
   if [ ${OBS_TYPES[$ii]} == "GTS" ]; then
-     obsfile=$OBSDIR/snow_depth/GTS/data_proc/${YYYY}${MM}/adpsfc_snow_${YYYY}${MM}${DD}${HH}.nc4
+     obsfile=$OBSDIR/snow_depth/GTS/data_proc/${YYYY}${MM}/sfcsno_snow_${YYYY}${MM}${DD}${HH}.nc4
   elif [ ${OBS_TYPES[$ii]} == "GHCN" ]; then 
   # GHCN are time-stamped at 18. If assimilating at 00, need to use previous day's obs, so that 
   # obs are within DA window.
