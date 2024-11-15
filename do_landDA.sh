@@ -101,7 +101,7 @@ YYYP=`echo $PREVDATE | cut -c1-4`
 MP=`echo $PREVDATE | cut -c5-6`
 DP=`echo $PREVDATE | cut -c7-8`
 HP=`echo $PREVDATE | cut -c9-10`
-HB=$(printf %02d $(( $HP+$WINLEN/2))
+HB=$(printf %02d $(( $HP+$WINLEN/2)))
 
 FILEDATE=${YYYY}${MM}${DD}.${HH}0000
 
