@@ -34,8 +34,10 @@ driver:
   save posterior ensemble increments: true 
 # update obs config is set to true by default (which also implies halo distribution is used)
 # need set to false here when halo distribution is NOT used 
-#  update obs config with geometry info: false
+#update obs config with geometry info: false
   run as observer only: XXHOFX
+  save prior variance: true
+  save posterior variance: true
 
 local ensemble DA:
   solver: LETKF
@@ -46,36 +48,45 @@ local ensemble DA:
 
 output:
   date: XXYYYY-XXMM-XXDDTXXHH:00:00Z
-#  date: &date XXYYYY-XXMM-XXDDTXXHH:00:00Z
   filetype: fms restart
-  datapath: output/jedi_anl/mem%{member}%  #output/letkf/C768/restart/mem%{member}%
-  #  prefix: snowanl
-  filename_sfcd: sfc_data.nc
-  filename_cplr: coupler.res
-  state variables: #[snwdph,vtype,slmsk] #,sheleg,snowxy,sneqvoxy,zsnsoxy,tsnoxy,snicexy,snliqxy,stc,smc,slc,tgxy]
-  - snwdph
-  - vtype
-  - slmsk
+  datapath: mem%{member}%  
+  prefix: jedi_anl
+  filename_sfcd: XXYYYYXXMMXXDD.XXHH0000.sfc_data.nc
+  #filename_cplr: coupler.res
+  state variables: [snwdph,vtype,slmsk] 
+  #,sheleg,snowxy,sneqvoxy,zsnsoxy,tsnoxy,snicexy,snliqxy,stc,smc,slc,tgxy]
+
 output ensemble increments:
   date: XXYYYY-XXMM-XXDDTXXHH:00:00Z #*date
   filetype: fms restart
-  datapath: output/jedi_incr/mem%{member}%
+  datapath: mem%{member}%
   filename_sfcd: XXYYYYXXMMXXDD.XXHH0000.sfc_data.nc  #xainc.sfc_data.nc
   prefix: snowinc  #land_inc
-  state variables:
-  - snwdph
-  - vtype
-  - slmsk
+  state variables: [snwdph,vtype,slmsk]
+ 
 output increment:
   date: XXYYYY-XXMM-XXDDTXXHH:00:00Z #*date
   filetype: fms restart
-  datapath: output/jedi_incr/mem%{member}%
+  datapath: mem%{member}%
   filename_sfcd: XXYYYYXXMMXXDD.XXHH0000.sfc_data.nc
   prefix: snowinc
-  state variables:
-  - snwdph
-  - vtype
-  - slmsk
+  state variables: [snwdph,vtype,slmsk]
+
+output variance prior:
+  date: XXYYYY-XXMM-XXDDTXXHH:00:00Z #*date
+  filetype: fms restart
+  datapath: mem%{member}%
+  filename_sfcd: XXYYYYXXMMXXDD.XXHH0000.sfc_data.nc
+  prefix: prior_var
+  state variables: [snwdph,vtype,slmsk]
+
+output variance posterior:
+  date: XXYYYY-XXMM-XXDDTXXHH:00:00Z #*date
+  filetype: fms restart
+  datapath: mem%{member}%
+  filename_sfcd: XXYYYYXXMMXXDD.XXHH0000.sfc_data.nc
+  prefix: posterior_var
+  state variables: [snwdph,vtype,slmsk]
 
 observations:
   observers:

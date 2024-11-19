@@ -29,12 +29,12 @@ fi
 
 echo "reading DA settings from $config_file"
 
-GFSv17=${GFSv17:-"NO"}
-num_tiles=${num_tiles:- 6}
-ensemble_size=${ensemble_size:- 1}
-NPROC_JEDI=${NPROC_JEDI:- 6}
+source $config_file 
 
-source $config_file
+GFSv17=${GFSv17:-"NO"}
+num_tiles=${num_tiles:-6}
+ensemble_size=${ensemble_size:-1}
+NPROC_JEDI=${NPROC_JEDI:-6}
 
 source ${LANDDADIR}/env_GDASApp
 
@@ -44,6 +44,13 @@ OBSDIR=${OBSDIR:-"/scratch2/NCEPDEV/land/data/DA/"}
 # set executable directories
 
 export JEDI_EXECDIR=${JEDI_EXECDIR:-"${GDASApp_root}/build/bin/"}
+
+#export BUILD_DIR=/scratch1/NCEPDEV/da/Tseganeh.Gichamo/GDASApp/build/
+##JEDI bin directory where the executables are found
+#export jedibin=${BUILD_DIR}/bin
+#export jedi_letkf_exe=$jedibin/fv3jedi_letkf.x
+#export jedi_hofx_exe=$jedibin/fv3jedi_hofx.x
+#export jedi_hofx_nm_exe=$jedibin/fv3jedi_hofx_nomodel.x
 
 # create local copy of JEDI_STATICDIR, so can over-ride default files 
 # (March 2024, using own fieldMetaData override file)
@@ -82,18 +89,13 @@ if [[ ! -e ${OUTDIR}/DA ]]; then
     mkdir ${OUTDIR}/DA/jedi_incr
     mkdir ${OUTDIR}/DA/logs
     mkdir ${OUTDIR}/DA/hofx
-    mkdir ${OUTDIR}/DA/restarts 
-    mkdir ${OUTDIR}/DA/jedi_anl    
-    if [[ "$ensemble_size" -gt 1  ]]; then            
-        for ie in $(seq 0 $ensemble_size)     
-        do
-            mem_ens="mem`printf %03i $ie`"
-            mkdir ${OUTDIR}/DA/jedi_incr/${mem_ens}     
-            # mkdir ${OUTDIR}/DA/hofx/${mem_ens}     
-            mkdir ${OUTDIR}/DA/restarts/${mem_ens}    
-            mkdir ${OUTDIR}/DA/jedi_anl/${mem_ens}               
-        done    
-    fi     
+    #if [[ "$ensemble_size" -gt 1  ]]; then            
+    #    for ie in $(seq 0 $ensemble_size)     
+    #    do
+    #        mem_ens="mem`printf %03i $ie`"
+    #        mkdir ${OUTDIR}/DA/jedi_incr/${mem_ens}     
+    #    done    
+    #fi     
 fi 
 
 if [[ ! -e $JEDIWORKDIR ]]; then 
@@ -103,29 +105,32 @@ if [[ ! -e $JEDIWORKDIR ]]; then
         for ie in $(seq 0 $ensemble_size)
         do
             mem_ens="mem`printf %03i $ie`"
-            mkdir $JEDIWORKDIR/${mem_ens}    
+            #mkdir $JEDIWORKDIR/${mem_ens}
+	    ln -s $WORKDIR/${mem_ens} $JEDIWORKDIR/${mem_ens}   
+	    ln -s ${TPATH}/${TSTUB}* ${JEDIWORKDIR}/${mem_ens} 
         done   
     fi 
     ln -s ${TPATH}/${TSTUB}* ${JEDIWORKDIR}
     ln -s ${TPATH}/${TSTUB}* ${JEDIWORKDIR}/restarts/ # to-do. change to only need one copy.
 
     # TODO: instead of link below we create a dir structure that may be deleted while OUTDIR is kept
-    # ln -s ${OUTDIR}/DA  ${JEDIWORKDIR}/output  
-    mkdir $JEDIWORKDIR/output
-    mkdir $JEDIWORKDIR/output/jedi_incr
-    mkdir $JEDIWORKDIR/output/hofx
-    mkdir $JEDIWORKDIR/output/restarts   
-    mkdir $JEDIWORKDIR/output/jedi_anl 
-    if [[ "$ensemble_size" -gt 1  ]]; then            
-        for ie in $(seq 0 $ensemble_size)     
-        do
-            mem_ens="mem`printf %03i $ie`"
-            mkdir $JEDIWORKDIR/output/jedi_incr/${mem_ens} 
-            # mkdir $JEDIWORKDIR/output/hofx/${mem_ens}           
-            mkdir $JEDIWORKDIR/output/restarts/${mem_ens}    
-            mkdir $JEDIWORKDIR/output/jedi_anl/${mem_ens}                 
-        done    
-    fi 
+    ln -s ${OUTDIR}  ${JEDIWORKDIR}/output 
+
+#    mkdir $JEDIWORKDIR/output
+#    mkdir $JEDIWORKDIR/output/jedi_incr
+#    mkdir $JEDIWORKDIR/output/hofx
+#    mkdir $JEDIWORKDIR/output/restarts   
+#    mkdir $JEDIWORKDIR/output/jedi_anl 
+#    if [[ "$ensemble_size" -gt 1  ]]; then            
+#        for ie in $(seq 0 $ensemble_size)     
+#        do
+#            mem_ens="mem`printf %03i $ie`"
+#            mkdir $JEDIWORKDIR/output/jedi_incr/${mem_ens} 
+#            # mkdir $JEDIWORKDIR/output/hofx/${mem_ens}           
+#            mkdir $JEDIWORKDIR/output/restarts/${mem_ens}    
+#            mkdir $JEDIWORKDIR/output/jedi_anl/${mem_ens}                 
+#        done    
+#    fi 
 fi
 
 cd $JEDIWORKDIR 
@@ -141,7 +146,8 @@ MM=`echo $THISDATE | cut -c5-6`
 DD=`echo $THISDATE | cut -c7-8`
 HH=`echo $THISDATE | cut -c9-10`
 
-PREVDATE=`${INCDATE} $THISDATE -$WINLEN`
+HALF_WINLEN=$((WINLEN/2))
+PREVDATE=`${INCDATE} $THISDATE -${HALF_WINLEN}`
 
 YYYP=`echo $PREVDATE | cut -c1-4`
 MP=`echo $PREVDATE | cut -c5-6`
@@ -159,7 +165,7 @@ if  [[ $SAVE_TILE == "YES" ]]; then
     done    
     
     if [[ "$ensemble_size" -gt 1  ]]; then 
-        for ie in $(seq $ensemble_size)
+        for ie in $(seq 0 $ensemble_size)
         do
             mem_ens="mem`printf %03i $ie`"     
             for tile in 1 2 3 4 5 6 
@@ -172,10 +178,12 @@ fi
 
 #stage restarts for applying JEDI update (files will get directly updated)
 # for LETKF mem000--ensemble mean-- used only in IMS Calc
-for tile in 1 2 3 4 5 6 
-do
-  ln -fs ${RSTRDIR}/${FILEDATE}.sfc_data.tile${tile}.nc ${JEDIWORKDIR}/restarts/${FILEDATE}.sfc_data.tile${tile}.nc
-done
+if [[ "$ensemble_size" -eq 1  ]]; then
+    for tile in 1 2 3 4 5 6 
+    do
+      ln -fs ${RSTRDIR}/${FILEDATE}.sfc_data.tile${tile}.nc ${JEDIWORKDIR}/restarts/${FILEDATE}.sfc_data.tile${tile}.nc
+    done
+fi
 cres_file=${JEDIWORKDIR}/restarts/${FILEDATE}.coupler.res
 if [[ -e  ${RSTRDIR}/${FILEDATE}.coupler.res ]]; then 
     cp ${RSTRDIR}/${FILEDATE}.coupler.res $cres_file
@@ -195,13 +203,13 @@ else #  if not present, need to create coupler.res for JEDI
 fi 
 
 if [[ "$ensemble_size" -gt 1  ]]; then    
-    for ie in $(seq $ensemble_size)
+    for ie in $(seq 0 $ensemble_size)
     do
         mem_ens="mem`printf %03i $ie`"
-        for tile in 1 2 3 4 5 6
-        do
-        ln -fs ${WORKDIR}/${mem_ens}/${FILEDATE}.sfc_data.tile${tile}.nc ${JEDIWORKDIR}/${mem_ens}/${FILEDATE}.sfc_data.tile${tile}.nc
-        done
+        #for tile in 1 2 3 4 5 6
+        #do
+        #ln -fs ${WORKDIR}/${mem_ens}/${FILEDATE}.sfc_data.tile${tile}.nc ${JEDIWORKDIR}/${mem_ens}/${FILEDATE}.sfc_data.tile${tile}.nc
+        #done
         cp ${cres_file} ${JEDIWORKDIR}/${mem_ens}/${FILEDATE}.coupler.res
     done
 fi
@@ -482,6 +490,8 @@ elif [[ ${DAalg} == 'letkf' ]]; then
         sed -i -e "s/XXMM/${MM}/g" bkg1mem.yaml
         sed -i -e "s/XXDD/${DD}/g" bkg1mem.yaml
         sed -i -e "s/XXHH/${HH}/g" bkg1mem.yaml
+	sed -i -e "s/XXRES/${RES}/g" bkg1mem.yaml
+        sed -i -e "s/XXORES/${ORES}/g" bkg1mem.yaml
         for ie in $(seq $ensemble_size)
         do
             cp bkg1mem.yaml backgroundens.yaml
@@ -498,6 +508,8 @@ elif [[ ${DAalg} == 'letkf' ]]; then
         sed -i -e "s/XXMM/${MM}/g" bkg1mem.yaml
         sed -i -e "s/XXDD/${DD}/g" bkg1mem.yaml
         sed -i -e "s/XXHH/${HH}/g" bkg1mem.yaml
+	sed -i -e "s/XXRES/${RES}/g" bkg1mem.yaml
+        sed -i -e "s/XXORES/${ORES}/g" bkg1mem.yaml
         for ie in $(seq $ensemble_size)
         do
             cp bkg1mem.yaml backgroundens.yaml
@@ -520,6 +532,7 @@ echo 'do_landDA: calling fv3-jedi'
 
 if [[ $do_DA == "YES" ]]; then
     time srun -n $NPROC_JEDI ${JEDI_EXECDIR}/${JEDI_EXEC} jedi_DA.yaml ${LOGDIR}/jedi_DA.log
+    #time srun -n $NPROC_JEDI $jedi_letkf_exe jedi_DA.yaml ${LOGDIR}/jedi_DA.log
     if [[ $? != 0 ]]; then
         echo "JEDI DA failed"
         exit 10
@@ -536,12 +549,14 @@ fi
 ################################################
 # 6. APPLY INCREMENT TO UFS RESTARTS 
 ################################################
+
 NPROC_INCR=$SLURM_NTASKS
+
 if [[ $do_DA == "YES" ]]; then 
 
     if [[ "$ensemble_size" -gt 1  ]]; then 
         rst_path="./"
-        inc_path="./output/jedi_incr/"
+        inc_path="./"  #output/DA/jedi_incr/"
     else
         for tile in 1 2 3 4 5 6 
         do
@@ -574,7 +589,7 @@ EOF
 
     echo 'do_landDA: calling apply snow increment'
  
-    time srun '--export=ALL' -n $NPROC_INCR ${INCR_EXECDIR}/apply_incr.exe ${LOGDIR}/apply_incr.log
+    time srun '--export=ALL' -n ${NPROC_INCR} ${INCR_EXECDIR}/apply_incr.exe ${LOGDIR}/apply_incr.log
     if [[ $? != 0 ]]; then
         echo "apply snow increment failed"
         exit 10
@@ -588,13 +603,13 @@ EOF
             mem_ens="mem`printf %03i $ie`"
             for tile in 1 2 3 4 5 6 
             do
-                ln -fs ${JEDIWORKDIR}/$mem_ens/${FILEDATE}.sfc_data.tile${tile}.nc ${JEDIWORKDIR}/mem000/sfcd_t${tile}_mem${ie}.nc 
+                cp ${JEDIWORKDIR}/$mem_ens/${FILEDATE}.sfc_data.tile${tile}.nc ${JEDIWORKDIR}/mem000/sfcd_t${tile}_mem${ie}.nc 
             done
         done
         for tile in 1 2 3 4 5 6 
         do
             ncra -O ${JEDIWORKDIR}/mem000/sfcd_t${tile}_mem*.nc ${JEDIWORKDIR}/mem000/${FILEDATE}.sfc_data.tile${tile}.nc
-            yes |cp -u ${JEDIWORKDIR}/mem000/${FILEDATE}.sfc_data.tile${tile}.nc ${WORKDIR}/mem000/${FILEDATE}.sfc_data.tile${tile}.nc
+            #yes |cp -f ${JEDIWORKDIR}/mem000/${FILEDATE}.sfc_data.tile${tile}.nc ${WORKDIR}/mem000/${FILEDATE}.sfc_data.tile${tile}.nc
 
 	    rm -f ${JEDIWORKDIR}/mem000/sfcd_t${tile}_mem*.nc
         done
@@ -609,46 +624,26 @@ fi
 # note we are forcing overwrite
 #TODO check whether to keep or delete outdir/da/hofx rather than copying
 # Also it might be better to do these copies above and work within ${JEDIWORKDIR}/output/DA/
-if [ $SAVE_IMS == "YES"  ]; then
-   if [[ -e ${JEDIWORKDIR}/ioda.IMSscf.${YYYY}${MM}${DD}.${TSTUB}.nc ]]; then
-    #   mv -f ${JEDIWORKDIR}/ioda.IMSscf.${YYYY}${MM}${DD}.${TSTUB}.nc ${JEDIWORKDIR}/output/DA/IMSproc/
-      yes |cp -u ${JEDIWORKDIR}/ioda.IMSscf.${YYYY}${MM}${DD}.${TSTUB}.nc ${OUTDIR}/DA/IMSproc/
-   fi
-fi 
 
-# keep increments
-if [ $SAVE_INCR == "YES" ] && [ $do_DA == "YES" ]; then
-    if [[ "$ensemble_size" -eq 1  ]]; then 
-        # mv -f ${JEDIWORKDIR}/snowinc.${FILEDATE}.sfc_data.tile*.nc  ${JEDIWORKDIR}/output/DA/jedi_incr/    
-        yes |cp -u ${JEDIWORKDIR}/snowinc.${FILEDATE}.sfc_data.tile*.nc  ${OUTDIR}/DA/jedi_incr/       
-    else # Remove this if we keep the OUTDIR link above
-        yes |cp -r -u ${JEDIWORKDIR}/output/jedi_incr/*  ${OUTDIR}/DA/jedi_incr/           
-    fi	
-fi 
-
-# keep hofx
-if [[ $SAVE_HOFX == "YES" ]]; then
-    if [ $do_DA == "YES" ] || [ $do_HOFX == "YES" ]; then
-        yes |cp -r -u ${JEDIWORKDIR}/output/hofx/*  ${OUTDIR}/DA/hofx/
-    fi
-fi
-
-# keep analysis restarts (for LETKF)
-if [ $SAVE_ANL == "YES" ] && [ $do_DA == "YES" ]; then
-    if [[ "$ensemble_size" -eq 1  ]]; then
-        # yes |cp -u ${JEDIWORKDIR}/restarts/${FILEDATE}.sfc_data.tile*.nc  ${JEDIWORKDIR}/output/DA/restarts/
-        yes |cp -u ${JEDIWORKDIR}/restarts/${FILEDATE}.sfc_data.tile*.nc  ${OUTDIR}/DA/restarts/
-    else 
-        yes |cp -u -r ${JEDIWORKDIR}/output/jedi_anl/*  ${OUTDIR}/DA/jedi_anl/
-
-        for ie in $(seq 0 $ensemble_size) # non-jedi analysis, from add_jedi_incr
-        do
-            mem_ens="mem`printf %03i $ie`"
-            yes |cp -u -r ${JEDIWORKDIR}/$mem_ens/*  ${OUTDIR}/DA/restarts/$mem_ens/
-        done
-        
-    fi
-fi
+#if [ $SAVE_IMS == "YES"  ]; then
+#   if [[ -e ${JEDIWORKDIR}/ioda.IMSscf.${YYYY}${MM}${DD}.${TSTUB}.nc ]]; then
+#     yes |cp -u ${JEDIWORKDIR}/ioda.IMSscf.${YYYY}${MM}${DD}.${TSTUB}.nc ${JEDIWORKDIR}/output/DA/IMSproc/
+#   fi
+#fi
+#
+## keep increments
+#if [ $SAVE_INCR == "YES" ] && [ $do_DA == "YES" ]; then
+#    if [[ "$ensemble_size" -eq 1  ]]; then
+#     yes |cp -u ${JEDIWORKDIR}/snowinc.${FILEDATE}.sfc_data.tile*.nc  ${JEDIWORKDIR}/output/DA/jedi_incr/
+#    fi
+#fi
+#
+## keep analysis restarts (for LETKF)
+#if [ $SAVE_ANL == "YES" ] && [ $do_DA == "YES" ]; then
+#    if [[ "$ensemble_size" -eq 1  ]]; then
+#      yes |cp -u ${JEDIWORKDIR}/restarts/${FILEDATE}.sfc_data.tile*.nc  ${JEDIWORKDIR}/output/DA/restarts/
+#    fi
+#fi
 
 # clean up 
 if [[ $KEEPJEDIDIR == "NO" ]]; then
