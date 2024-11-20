@@ -49,7 +49,7 @@ local ensemble DA:
 output:
   date: XXYYYY-XXMM-XXDDTXXHH:00:00Z
   filetype: fms restart
-  datapath: mem%{member}%  
+  datapath: output/DA/jedi_anl/mem%{member}%  
   prefix: jedi_anl
   filename_sfcd: XXYYYYXXMMXXDD.XXHH0000.sfc_data.nc
   #filename_cplr: coupler.res
@@ -59,7 +59,7 @@ output:
 output ensemble increments:
   date: XXYYYY-XXMM-XXDDTXXHH:00:00Z #*date
   filetype: fms restart
-  datapath: mem%{member}%
+  datapath: output/DA/jedi_incr/mem%{member}%
   filename_sfcd: XXYYYYXXMMXXDD.XXHH0000.sfc_data.nc  #xainc.sfc_data.nc
   prefix: snowinc  #land_inc
   state variables: [snwdph,vtype,slmsk]
@@ -67,7 +67,7 @@ output ensemble increments:
 output increment:
   date: XXYYYY-XXMM-XXDDTXXHH:00:00Z #*date
   filetype: fms restart
-  datapath: mem%{member}%
+  datapath: output/DA/jedi_incr/mem%{member}%
   filename_sfcd: XXYYYYXXMMXXDD.XXHH0000.sfc_data.nc
   prefix: snowinc
   state variables: [snwdph,vtype,slmsk]
