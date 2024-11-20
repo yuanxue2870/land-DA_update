@@ -153,6 +153,13 @@ MP=`echo $PREVDATE | cut -c5-6`
 DP=`echo $PREVDATE | cut -c7-8`
 HP=`echo $PREVDATE | cut -c9-10`
 
+# make sure letkf settings are consistent 
+if [[ ${DAalg} == 'letkf' && "$ensemble_size" -lt 2]]; 
+    echo "Error! LETKF requires at least 2 ens members. Exiting"
+    exit
+fi
+
+
 FILEDATE=${YYYY}${MM}${DD}.${HH}0000
 
 mem_ens="mem000"
