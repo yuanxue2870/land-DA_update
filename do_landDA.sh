@@ -481,41 +481,49 @@ elif [[ ${DAalg} == 'letkf' ]]; then
 
     if [[ $do_DA == "YES" && $YAML_DA == "construct" ]];then
 
-        cp ${LANDDADIR}/jedi/fv3-jedi/yaml_files/${DAalg}/bkg1mem.yaml ${JEDIWORKDIR}/bkg1mem.yaml
-        
-        sed -i -e "s/XXYYYY/${YYYY}/g" bkg1mem.yaml
-        sed -i -e "s/XXMM/${MM}/g" bkg1mem.yaml
-        sed -i -e "s/XXDD/${DD}/g" bkg1mem.yaml
-        sed -i -e "s/XXHH/${HH}/g" bkg1mem.yaml
-    	sed -i -e "s/XXRES/${RES}/g" bkg1mem.yaml
-        sed -i -e "s/XXORES/${ORES}/g" bkg1mem.yaml
-        
+        cat ${LANDDADIR}/jedi/fv3-jedi/yaml_files/${DAalg}/bkghead.yaml >> jedi_DA.yaml
+
+        bkg1mem=${LANDDADIR}/jedi/fv3-jedi/yaml_files/${DAalg}/bkg1mem.yaml     # ${JEDIWORKDIR}/bkg1mem.yaml
+
         for ie in $(seq $ensemble_size)
         do
-            cp bkg1mem.yaml backgroundens.yaml
+            cp $bkg1mem backgroundens.yaml
             mem_ens="mem`printf %03i $ie`"
             sed -i -e "s#XXMEM#${mem_ens}#g" backgroundens.yaml
             cat backgroundens.yaml >> jedi_DA.yaml
         done
+        
+        sed -i -e "s/XXYYYY/${YYYY}/g" jedi_DA.yaml
+        sed -i -e "s/XXMM/${MM}/g" jedi_DA.yaml
+        sed -i -e "s/XXDD/${DD}/g" jedi_DA.yaml
+        sed -i -e "s/XXHH/${HH}/g" jedi_DA.yaml
+    	sed -i -e "s/XXRES/${RES}/g" jedi_DA.yaml
+        sed -i -e "s/XXORES/${ORES}/g" jedi_DA.yaml  
+        
     fi
 
     if [[ $do_HOFX == "YES" && $YAML_HOFX == "construct" ]];then
+        
+        cat ${LANDDADIR}/jedi/fv3-jedi/yaml_files/${DAalg}/bkghead.yaml >> jedi_hofx.yaml
 
-        cp ${LANDDADIR}/jedi/fv3-jedi/yaml_files/${DAalg}/bkg1mem.yaml ${JEDIWORKDIR}/bkg1mem.yaml
-        sed -i -e "s/XXYYYY/${YYYY}/g" bkg1mem.yaml
-        sed -i -e "s/XXMM/${MM}/g" bkg1mem.yaml
-        sed -i -e "s/XXDD/${DD}/g" bkg1mem.yaml
-        sed -i -e "s/XXHH/${HH}/g" bkg1mem.yaml
-	    sed -i -e "s/XXRES/${RES}/g" bkg1mem.yaml
-        sed -i -e "s/XXORES/${ORES}/g" bkg1mem.yaml 
-
+        bkg1mem=${LANDDADIR}/jedi/fv3-jedi/yaml_files/${DAalg}/bkg1mem.yaml     # ${JEDIWORKDIR}/bkg1mem.yaml
+        # cp ${LANDDADIR}/jedi/fv3-jedi/yaml_files/${DAalg}/bkg1mem.yaml ${JEDIWORKDIR}/bkg1mem.yaml
+        
         for ie in $(seq $ensemble_size)
         do
-            cp bkg1mem.yaml backgroundens.yaml
+            cp $bkg1mem backgroundens.yaml
             mem_ens="mem`printf %03i $ie`"
             sed -i -e "s#XXMEM#${mem_ens}#g" backgroundens.yaml
             cat backgroundens.yaml >> jedi_hofx.yaml
         done
+
+        sed -i -e "s/XXYYYY/${YYYY}/g" jedi_hofx.yaml
+        sed -i -e "s/XXMM/${MM}/g" jedi_hofx.yaml
+        sed -i -e "s/XXDD/${DD}/g" jedi_hofx.yaml
+        sed -i -e "s/XXHH/${HH}/g" jedi_hofx.yaml
+	    sed -i -e "s/XXRES/${RES}/g" jedi_hofx.yaml
+        sed -i -e "s/XXORES/${ORES}/g" jedi_hofx.yaml
+        
     fi
 
 fi
