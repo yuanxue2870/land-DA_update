@@ -44,7 +44,7 @@ variational:
 cost function:
   cost type: 3D-Var
   time window:
-    begin: XXYYYP-XXMP-XXDPTXXHB:00:00Z
+    begin: XXYYYB-XXMB-XXDBTXXHB:00:00Z
     length: PTXXWINLENH
   analysis variables: [totalSnowDepth] 
   geometry:
