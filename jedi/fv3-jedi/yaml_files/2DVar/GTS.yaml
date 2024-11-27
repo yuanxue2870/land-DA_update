@@ -1,8 +1,5 @@
     - obs space:
         name: SnowDepthGTS
-        distribution:
-          name: Halo
-          halo size: 250e3
         simulated variables: [totalSnowDepth]
         obsdatain:
           engine:
