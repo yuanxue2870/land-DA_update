@@ -13,19 +13,18 @@ geometry:
 
   time invariant fields:
     state fields:
-      datetime: XXYYYY-XXMM-XXDDTXXHH:00:00Z
+      datetime: XXYYYB-XXMB-XXDBTXXHB:00:00Z
       filetype: fms restart
       skip coupler file: true
       state variables: [orog_filt]
       datapath: ./   #XXTPATH
-#/scratch1/NCEPDEV/global/glopara/fix/orog/20220805/C768.mx025_frac/
       filename_orog: XXTSTUB.nc 
-#oro_C768.mx025.nc
+      filename_sfcd: XXYYYYXXMMXXDD.XXHH0000.sfc_data.nc
     derived fields: [nominal_surface_pressure]
 
 time window:
-  begin: 'XXYYYP-XXMP-XXDPTXXHP:00:00Z'
-  length: PTXXDTH
+  begin: 'XXYYYB-XXMB-XXDBTXXHB:00:00Z'
+  length: PTXXWINLENH
 
 driver:
   save posterior mean: true

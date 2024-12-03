@@ -145,20 +145,30 @@ MM=`echo $THISDATE | cut -c5-6`
 DD=`echo $THISDATE | cut -c7-8`
 HH=`echo $THISDATE | cut -c9-10`
 
-HALF_WINLEN=$((WINLEN/2))
-PREVDATE=`${INCDATE} $THISDATE -${HALF_WINLEN}`
+PREVDATE=`${INCDATE} $THISDATE -$WINLEN`
 
 YYYP=`echo $PREVDATE | cut -c1-4`
 MP=`echo $PREVDATE | cut -c5-6`
 DP=`echo $PREVDATE | cut -c7-8`
 HP=`echo $PREVDATE | cut -c9-10`
 
+if [[ ${DAalg} == '2DVar' || ${DAalg} == 'letkf' ]]; then   # todo: make this default?
+   HALFWINLEN=$(($WINLEN/2))
+   DABEGIN=`${INCDATE} $THISDATE -$HALFWINLEN`
+else
+   DABEGIN=`${INCDATE} $THISDATE -$WINLEN`
+fi 
+
+YYYB=`echo $DABEGIN | cut -c1-4`
+MB=`echo $DABEGIN | cut -c5-6`
+DB=`echo $DABEGIN | cut -c7-8`
+HB=`echo $DABEGIN | cut -c9-10`
+
 # make sure letkf settings are consistent 
 if [[ ${DAalg} == 'letkf' && "$ensemble_size" -lt 2 ]]; then 
     echo "Error! LETKF requires at least 2 ens members. Exiting"
     exit
 fi
-
 
 FILEDATE=${YYYY}${MM}${DD}.${HH}0000
 
@@ -381,7 +391,7 @@ if [[ $do_DA == "YES" ]]; then
 
    sed -i -e "s/XXHOFX/false/g" jedi_DA.yaml  # do DA
    
-   sed -i -e "s/XXDT/${WINLEN}/g" jedi_DA.yaml  #  DA window lenth
+#    sed -i -e "s/XXDT/${WINLEN}/g" jedi_DA.yaml  #  DA window lenth
    sed -i -e "s/XXNTIL/${num_tiles}/g" jedi_DA.yaml  # Number of tiles
    sed -i -e "s/XXNPZ/${NPZ}/g" jedi_DA.yaml  # vertical layers
    sed -i -e "s/XXLX/${LayX}/g" jedi_DA.yaml  # Layout
@@ -429,7 +439,7 @@ if [[ $do_HOFX == "YES" ]]; then
    
    sed -i -e "s/XXHOFX/true/g" jedi_hofx.yaml  # do only HOFX
 
-   sed -i -e "s/XXDT/${WINLEN}/g" jedi_hofx.yaml  #  DA window lenth
+#    sed -i -e "s/XXDT/${WINLEN}/g" jedi_hofx.yaml  #  DA window lenth
    sed -i -e "s/XXNTIL/${num_tiles}/g" jedi_hofx.yaml  # Number of tiles
    sed -i -e "s/XXNPZ/${NPZ}/g" jedi_hofx.yaml  # vertical layers
    sed -i -e "s/XXLX/${LayX}/g" jedi_hofx.yaml  # Layout
