@@ -226,7 +226,7 @@ do
 
   # get the obs file name 
   if [ ${OBS_TYPES[$ii]} == "GTS" ]; then
-     obsfile=$OBSDIR/snow_depth/GTS/data_proc/${YYYY}${MM}/adpsfc_snow_${YYYY}${MM}${DD}${HH}.nc4
+     obsfile=$OBSDIR/snow_depth/GTS/data_proc/${YYYY}${MM}/sfcsno_snow_${YYYY}${MM}${DD}${HH}.nc4
   elif [ ${OBS_TYPES[$ii]} == "GHCN" ]; then 
   # GHCN are time-stamped at 18. If assimilating at 00, need to use previous day's obs, so that 
   # obs are within DA window.
@@ -365,10 +365,12 @@ if [[ $do_DA == "YES" ]]; then
    sed -i -e "s/XXDD/${DD}/g" jedi_DA.yaml
    sed -i -e "s/XXHH/${HH}/g" jedi_DA.yaml
 
-   sed -i -e "s/XXYYYP/${YYYP}/g" jedi_DA.yaml
-   sed -i -e "s/XXMP/${MP}/g" jedi_DA.yaml
-   sed -i -e "s/XXDP/${DP}/g" jedi_DA.yaml
-   sed -i -e "s/XXHP/${HP}/g" jedi_DA.yaml
+   sed -i -e "s/XXYYYB/${YYYB}/g" jedi_DA.yaml
+   sed -i -e "s/XXMB/${MB}/g" jedi_DA.yaml
+   sed -i -e "s/XXDB/${DB}/g" jedi_DA.yaml
+   sed -i -e "s/XXHB/${HB}/g" jedi_DA.yaml
+
+   sed -i -e "s/XXWINLEN/${WINLEN}/g" jedi_DA.yaml
 
    sed -i -e "s/XXTSTUB/${TSTUB}/g" jedi_DA.yaml
    sed -i -e "s#XXTPATH#${TPATH}#g" jedi_DA.yaml
@@ -411,10 +413,12 @@ if [[ $do_HOFX == "YES" ]]; then
    sed -i -e "s/XXDD/${DD}/g" jedi_hofx.yaml
    sed -i -e "s/XXHH/${HH}/g" jedi_hofx.yaml
 
-   sed -i -e "s/XXYYYP/${YYYP}/g" jedi_hofx.yaml
-   sed -i -e "s/XXMP/${MP}/g" jedi_hofx.yaml
-   sed -i -e "s/XXDP/${DP}/g" jedi_hofx.yaml
-   sed -i -e "s/XXHP/${HP}/g" jedi_hofx.yaml
+   sed -i -e "s/XXYYYB/${YYYB}/g" jedi_hofx.yaml
+   sed -i -e "s/XXMB/${MB}/g" jedi_hofx.yaml
+   sed -i -e "s/XXDB/${DB}/g" jedi_hofx.yaml
+   sed -i -e "s/XXHB/${HB}/g" jedi_hofx.yaml
+
+   sed -i -e "s/XXWINLEN/${WINLEN}/g" jedi_hofx.yaml
 
    sed -i -e "s#XXTPATH#${TPATH}#g" jedi_hofx.yaml
    sed -i -e "s/XXTSTUB/${TSTUB}/g" jedi_hofx.yaml
