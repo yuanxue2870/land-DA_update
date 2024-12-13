@@ -31,7 +31,7 @@
         filter variables:
         - name: totalSnowDepth
         minvalue: 0.0
-        maxvalue: 2000.0
+        maxvalue: 20000.0
       - filter: Domain Check # missing station elevation (-999.9)
         where:
         - variable:
