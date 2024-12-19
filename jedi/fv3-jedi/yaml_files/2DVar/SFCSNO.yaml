@@ -36,6 +36,11 @@
         where:
         - variable:
             name: MetaData/stationElevation
+          value: is_valid 
+      - filter: Domain Check # invalid station elevation
+        where:
+        - variable:
+            name: MetaData/stationElevation
           minvalue: -200.0
           maxvalue: 9900.0
       - filter: Domain Check # land only
