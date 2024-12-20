@@ -32,7 +32,7 @@
         - name: totalSnowDepth
         minvalue: 0.0
         maxvalue: 20000.0
-       - filter: Domain Check # missing station elevation
+      - filter: Domain Check # missing station elevation
         where:
         - variable:
             name: MetaData/stationElevation
