@@ -5,6 +5,4 @@
 
 [submodule "add_jedi_incr"]
 	path = add_jedi_incr
-#	url = https://github.com/NOAA-PSL/land-apply_jedi_incr.git
-        url = https://github.com/tsga/land-apply_jedi_incr
-	branch = feature/lnd_ens
+	url = https://github.com/NOAA-PSL/land-apply_jedi_incr.git
