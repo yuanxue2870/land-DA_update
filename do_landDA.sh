@@ -35,6 +35,10 @@ GFSv17=${GFSv17:-"NO"}
 num_tiles=${num_tiles:-6}
 ensemble_size=${ensemble_size:-1}
 NPROC_JEDI=${NPROC_JEDI:-6}
+LayX=${LayX:-1}
+LayY=${LayY:-1}
+IOLayX=${IOLayX:-1}
+IOLayY=${IOLayY:-1}
 
 source ${LANDDADIR}/env_GDASApp
 
@@ -96,14 +100,13 @@ fi
 
 if [[ ! -e $JEDIWORKDIR ]]; then 
 
-    mkdir $JEDIWORKDIR      # ${WORKDIR}/jedi/  
+    mkdir $JEDIWORKDIR      
     mkdir ${JEDIWORKDIR}/restarts     
 
     if [[ "$ensemble_size" -gt 1  ]]; then  
         for ie in $(seq 0 $ensemble_size)
         do
             mem_ens="mem`printf %03i $ie`"
-            #mkdir $JEDIWORKDIR/${mem_ens}
             ln -s $WORKDIR/${mem_ens} $JEDIWORKDIR/${mem_ens}               
             ln -s ${TPATH}/${TSTUB}* ${JEDIWORKDIR}/${mem_ens} 
         done   
@@ -112,23 +115,6 @@ if [[ ! -e $JEDIWORKDIR ]]; then
     ln -s ${TPATH}/${TSTUB}* ${JEDIWORKDIR}/restarts/ # to-do. change to only need one copy.
 
     ln -s ${OUTDIR}  ${JEDIWORKDIR}/output 
-
- # TODO: instead of link below we create a dir structure that may be deleted while OUTDIR is kept ??
-    #    mkdir $JEDIWORKDIR/output
-    #    mkdir $JEDIWORKDIR/output/jedi_incr
-    #    mkdir $JEDIWORKDIR/output/hofx
-    #    mkdir $JEDIWORKDIR/output/restarts   
-    #    mkdir $JEDIWORKDIR/output/jedi_anl 
-    #    if [[ "$ensemble_size" -gt 1  ]]; then            
-    #        for ie in $(seq 0 $ensemble_size)     
-    #        do
-    #            mem_ens="mem`printf %03i $ie`"
-    #            mkdir $JEDIWORKDIR/output/jedi_incr/${mem_ens} 
-    #            # mkdir $JEDIWORKDIR/output/hofx/${mem_ens}           
-    #            mkdir $JEDIWORKDIR/output/restarts/${mem_ens}    
-    #            mkdir $JEDIWORKDIR/output/jedi_anl/${mem_ens}                 
-    #        done    
-    #    fi 
 
 fi
 
@@ -152,7 +138,7 @@ MP=`echo $PREVDATE | cut -c5-6`
 DP=`echo $PREVDATE | cut -c7-8`
 HP=`echo $PREVDATE | cut -c9-10`
 
-if [[ ${DAalg} == '2DVar' || ${DAalg} == 'letkf' ]]; then   # todo: make this default?
+if [[ ${DAalg} == '2DVar' || ${DAalg} == 'letkf' ]]; then   # todo: check this further and possibly make this default?
    HALFWINLEN=$(($WINLEN/2))
    DABEGIN=`${INCDATE} $THISDATE -$HALFWINLEN`
 else
@@ -176,7 +162,7 @@ mem_ens="mem000"
 RSTRDIR=${WORKDIR}/${mem_ens}
 
 if  [[ $SAVE_TILE == "YES" ]]; then          
-    for tile in 1 2 3 4 5 6 
+    for tile in $(seq 1 $num_tiles)
     do 
     cp ${RSTRDIR}/${FILEDATE}.sfc_data.tile${tile}.nc  ${RSTRDIR}/${FILEDATE}.sfc_data_back.tile${tile}.nc
     done    
@@ -185,7 +171,7 @@ if  [[ $SAVE_TILE == "YES" ]]; then
         for ie in $(seq 0 $ensemble_size)
         do
             mem_ens="mem`printf %03i $ie`"     
-            for tile in 1 2 3 4 5 6 
+            for tile in $(seq 1 $num_tiles) 
             do 
             cp ${WORKDIR}/${mem_ens}/${FILEDATE}.sfc_data.tile${tile}.nc  ${WORKDIR}/${mem_ens}/${FILEDATE}.sfc_data_back.tile${tile}.nc
             done    
@@ -195,7 +181,7 @@ fi
 
 #stage restarts for applying JEDI update (files will get directly updated)
 # for LETKF, mem000 (ensemble mean) used in IMS Calc 
-for tile in 1 2 3 4 5 6 
+for tile in $(seq 1 $num_tiles) 
 do
     ln -fs ${RSTRDIR}/${FILEDATE}.sfc_data.tile${tile}.nc ${JEDIWORKDIR}/restarts/${FILEDATE}.sfc_data.tile${tile}.nc
 done
@@ -453,8 +439,6 @@ fi
 # 4. EDIT RUN SETTINGS and CREATE BACKGROUND ENSEMBLE (LETKFOI)
 ###############################################################
 
-JEDI_EXEC="fv3jedi_letkf.x"
-
 if [ $GFSv17 == "YES" ]; then
     SNOWDEPTHVAR="snodl"
     cp ${LANDDADIR}/jedi/fv3-jedi/yaml_files/gfs-land-v17.yaml ${JEDIWORKDIR}/gfs-land-v17.yaml
@@ -469,6 +453,8 @@ if [[ ${DAalg} == '2DVar' ]]; then
 elif [[ ${DAalg} == 'letkfoi' ]]; then
 #To-do: make this section generic (currently assumes snow)
 
+    JEDI_EXEC="fv3jedi_letkf.x"
+    
     B=30  # back ground error std for LETKFOI
 
     # FOR LETKFOI, CREATE THE PSEUDO-ENSEMBLE
@@ -478,7 +464,7 @@ elif [[ ${DAalg} == 'letkfoi' ]]; then
                 rm -r $JEDIWORKDIR/mem_${ens}
         fi
         mkdir $JEDIWORKDIR/mem_${ens}
-        for tile in 1 2 3 4 5 6
+        for tile in $(seq 1 $num_tiles)
         do
         cp ${JEDIWORKDIR}/restarts/${FILEDATE}.sfc_data.tile${tile}.nc  ${JEDIWORKDIR}/mem_${ens}/${FILEDATE}.sfc_data.tile${tile}.nc
         done
@@ -496,9 +482,13 @@ elif [[ ${DAalg} == 'letkfoi' ]]; then
 elif [[ ${DAalg} == 'letkfoi_smc' ]]; then
 # To-do : combine this with the above
 
+    JEDI_EXEC="fv3jedi_letkf.x"
+    
     cp ${LANDDADIR}/jedi/fv3-jedi/yaml_files/gfs-soilMoisture.yaml ${JEDIWORKDIR}/gfs-soilMoisture.yaml
 
 elif [[ ${DAalg} == 'letkf' ]]; then
+
+    JEDI_EXEC="fv3jedi_letkf.x"
 
     if [[ $do_DA == "YES" && $YAML_DA == "construct" ]];then
 
@@ -586,7 +576,7 @@ if [[ $do_DA == "YES" ]]; then
         rst_path="./"
         inc_path="./output/DA/jedi_incr/"
     else
-        for tile in 1 2 3 4 5 6 
+        for tile in $(seq 1 $num_tiles)
         do
             ln -fs ${JEDIWORKDIR}/restarts/${FILEDATE}.sfc_data.tile${tile}.nc ${JEDIWORKDIR}/${FILEDATE}.sfc_data.tile${tile}.nc
         done
@@ -630,12 +620,12 @@ EOF
         for ie in $(seq $ensemble_size) 
         do
             mem_ens="mem`printf %03i $ie`"
-            for tile in 1 2 3 4 5 6 
+            for tile in $(seq 1 $num_tiles) 
             do
                 cp ${JEDIWORKDIR}/$mem_ens/${FILEDATE}.sfc_data.tile${tile}.nc ${JEDIWORKDIR}/mem000/sfcd_t${tile}_mem${ie}.nc 
             done
         done
-        for tile in 1 2 3 4 5 6 
+        for tile in $(seq 1 $num_tiles) 
         do
             ncra -O ${JEDIWORKDIR}/mem000/sfcd_t${tile}_mem*.nc ${JEDIWORKDIR}/mem000/${FILEDATE}.sfc_data.tile${tile}.nc
             #yes |cp -f ${JEDIWORKDIR}/mem000/${FILEDATE}.sfc_data.tile${tile}.nc ${WORKDIR}/mem000/${FILEDATE}.sfc_data.tile${tile}.nc
@@ -662,17 +652,6 @@ if [ $SAVE_INCR == "YES" ] && [ $do_DA == "YES" ]; then
     yes |cp -u ${JEDIWORKDIR}/snowinc.${FILEDATE}.sfc_data.tile*.nc  ${OUTDIR}/DA/jedi_incr/
    fi
 fi
-
-# Note: jediworkdir/output/DA is already linked to outdir/DA. 
-# TODO  delete ${JEDIWORKDIR}/output/DA/ based on settings?
-
-# if [[ $SAVE_HOFX == "NO" ]]; then
-#    rm -rf ${JEDIWORKDIR}/output/DA/hofx/*
-# fi
-# ## keep analysis restarts (for LETKF)
-# if [[ $SAVE_ANL == "NO" ]]; then
-#    rm -rf ${JEDIWORKDIR}/output/DA/jedi_anl/
-# fi
 
 # clean up 
 if [[ $KEEPJEDIDIR == "NO" ]]; then
