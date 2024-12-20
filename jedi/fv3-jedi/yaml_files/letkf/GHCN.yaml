@@ -20,24 +20,6 @@
     - localization method: Horizontal Box car
       lengthscale: 250e3
       max nobs: 50
-#    - localization method: Horizontal SOAR
-#      lengthscale: 250e3
-#      soar horizontal decay: 0.000021  #0.0   #0.0000286
-#      max nobs: 50
-#    - localization method: Horizontal Gaspari-Cohn
-#      lengthscale: 240e3
-#      max nobs: 50
-#
-#11.19.24 Box Car vertical localization excludes all obs (was not the case earlier)
-#    - localization method: Vertical localization
-#      ioda vertical coordinate: stationElevation
-#      ioda vertical coordinate group: MetaData
-#      localization function: Box Car
-#      vertical lengthscale: 15000
-#      max nobs: 50
-#    - localization method: Vertical Brasnett
-#      vertical lengthscale: 700
-
     obs filters:
     - filter: Bounds Check # negative / missing snow or too large snow depth
       filter variables:
@@ -55,19 +37,6 @@
           name: GeoVaLs/slmsk
         minvalue: 0.5
         maxvalue: 1.5
-    #    - filter: Domain Check # land only
-    #      where:
-    #      - variable:
-    #          name: GeoVaLs/land_frac
-    #        minvalue: 0.9
-    #        maxvalue: 1.0
-    # GFSv17 only.
-    #     #- filter: Domain Check # no sea ice
-    #         #  where:
-    #             #  - variable:
-    #                 #      name: fraction_of_ice@GeoVaLs
-    #                     #    maxvalue: 0.0
-
     - filter: RejectList  # no land-ice
       where:
       - variable:
@@ -98,13 +67,6 @@
       reference: MetaData/stationElevation
       value: GeoVaLs/filtered_orography
       absolute threshold: 1500.
-#    - filter: Difference Check
-#      reference: ObsValue/totalSnowDepth
-#      value: GeoVaLs/totalSnowDepth
-#      absolute threshold: 250
-#      action:
-#        name: reject
-#
     - filter: RejectList  # poor obs locations--not caught by other QCs
       where:
       - variable:
