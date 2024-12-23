@@ -66,14 +66,9 @@ fi
 
 # storage settings 
 
-<<<<<<< HEAD
 SAVE_IMS=${SAVE_IMS:-"YES"} # "YES" to save processed IMS IODA file
 SAVE_VIIRS=${SAVE_VIIRS:-"YES"} # "YES" to save processed VIIRS IODA file
 SAVE_INCR=${SAVE_INCR:-"YES"} # "YES" to save increment (add others?) JEDI output
-=======
-SAVE_IMS=${SAVE_IMS:-"NO"} # "YES" to save processed IMS IODA file
-SAVE_INCR=${SAVE_INCR:-"NO"} # "YES" to save increment (add others?) JEDI output
->>>>>>> upstream/develop
 SAVE_TILE=${SAVE_TILE:-"NO"} # "YES" to save background in tile space
 KEEPJEDIDIR=${KEEPJEDIDIR:-"NO"} # delete DA workdir 
 SAVE_ANL=${SAVE_ANL:-"NO"} # "YES" to save JEDI Analysis outputs
