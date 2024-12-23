@@ -20,11 +20,7 @@ geometry:
       filename_orog: XXTSTUB.nc
     derived fields: [nominal_surface_pressure]
 
-<<<<<<< HEAD
-window begin: XXYYYP-XXMP-XXDPTXXHP:00:00Z
-=======
 window begin: XXYYYB-XXMB-XXDBTXXHB:00:00Z
->>>>>>> upstream/develop
 window length: PTXXWINLENH
 
 background:

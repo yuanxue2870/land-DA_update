@@ -22,11 +22,7 @@ geometry:
     derived fields: [nominal_surface_pressure]
 
 time window:
-<<<<<<< HEAD
-  begin: XXYYYP-XXMP-XXDPTXXHP:00:00Z
-=======
   begin: XXYYYB-XXMB-XXDBTXXHB:00:00Z
->>>>>>> upstream/develop
   length: PTXXWINLENH
 
 background:
